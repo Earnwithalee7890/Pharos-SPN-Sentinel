@@ -1,33 +1,56 @@
-export interface TokenRiskAnalysis {
+export interface TokenAuditReport {
   address: string;
+  isContract: boolean;
   isVerified: boolean;
   hasMintFunction: boolean;
   hasBlacklistFunction: boolean;
   isProxy: boolean;
-  liquidityDepth: string;
-  holderCount: number;
-  riskScore: number; // 0-100, where 0 is safest, 100 is most dangerous
-  recommendation: 'BUY' | 'CAUTION' | 'AVOID';
+  safetyScore: number; // 0-100 (higher is safer)
+  recommendation: 'SAFE' | 'CAUTION' | 'DANGEROUS';
   details: string[];
 }
 
 export interface GasOptimization {
-  currentBaseFee: bigint;
-  priorityFee: bigint;
-  maxFeePerGas: bigint;
+  currentBaseFee: string;
+  priorityFee: string;
+  maxFeePerGas: string;
   estimatedWaitTimeSeconds: number;
   optimalTimeWindow: 'NOW' | 'IN_5_MIN' | 'LATER';
+  networkCongestion: 'LOW' | 'MEDIUM' | 'HIGH';
 }
 
-export interface SwapExecutionDetails {
-  tokenIn: string;
-  tokenOut: string;
-  amountIn: string;
-  estimatedAmountOut: string;
-  minimumAmountOut: string;
-  priceImpact: number;
-  route: string[];
-  gasEstimate: bigint;
-  status: 'SUCCESS' | 'DRY_RUN' | 'FAILED';
-  txHash?: string;
+export interface ValidatorStakingProfile {
+  address: string;
+  balanceEth: string;
+  transactionCount: number;
+  blocksMinedCount: number;
+  reputationScore: number; // 0-100
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+  details: string[];
+}
+
+export interface EVMChainComparison {
+  chainId: number;
+  chainName: string;
+  gasPriceGwei: string;
+  congestion: 'LOW' | 'MEDIUM' | 'HIGH';
+}
+
+export interface ValidatorTrustReport {
+  validatorAddress: string;
+  totalValidators: number;
+  decentralizationScore: number; // 0-100
+  nakamotoCoeff: number;
+  validatorConcentrationRisk: 'LOW' | 'MEDIUM' | 'HIGH';
+  ethereumProfile: ValidatorStakingProfile;
+  comparisons: EVMChainComparison[];
+  details: string[];
+  timestamp: string;
+}
+
+export interface CrossChainIntel {
+  validatorAddress: string;
+  stakingProfile: ValidatorStakingProfile;
+  comparisons: EVMChainComparison[];
+  timestamp: string;
 }

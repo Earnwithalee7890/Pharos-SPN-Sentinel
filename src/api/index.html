@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pharos SPN Sentinel — AI Agent Control Center</title>
+  <meta name="description" content="Autonomous AI Guardian Agent for Pharos Network. Secures transactions, audits bytecode, and optimizes staking yields.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-dark: #0a0814;
+      --bg-panel: rgba(18, 14, 36, 0.6);
+      --bg-panel-hover: rgba(26, 21, 51, 0.75);
+      --border-color: rgba(139, 92, 246, 0.2);
+      --border-color-glow: rgba(139, 92, 246, 0.5);
+      --text-primary: #f8f7fc;
+      --text-secondary: #a49cb3;
+      --accent-purple: #8b5cf6;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-yellow: #f59e0b;
+      --accent-red: #ef4444;
+      --glow-purple: rgba(139, 92, 246, 0.25);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(139, 92, 246, 0.3);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(139, 92, 246, 0.5);
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 5% 5%, rgba(139, 92, 246, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 95% 85%, rgba(59, 130, 246, 0.1) 0%, transparent 45%);
+      color: var(--text-primary);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1400px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-glow {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.35rem;
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+      animation: pulse-glow 2s infinite alternate;
+    }
+
+    header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff 40%, var(--accent-purple), var(--accent-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .header-links {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.55rem 1.25rem;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+      color: #fff;
+      border: none;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-primary);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ff6b6b;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-danger:hover {
+      background: rgba(239, 68, 68, 0.25);
+      border-color: rgba(239, 68, 68, 0.5);
+      box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.8rem;
+    }
+
+    /* Main Workspace Grid */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 1.5rem;
+      flex: 1;
+    }
+
+    @media (max-width: 1024px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Panels */
+    .panel {
+      background: var(--bg-panel);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .panel-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .panel-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .panel-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    /* LEFT SIDE: AGENT CONSOLE */
+    .left-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* Chat Area */
+    .chat-panel {
+      height: 400px;
+      flex: 1.2;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 1.25rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .chat-bubble {
+      max-width: 80%;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      animation: message-pop 0.3s ease;
+      line-height: 1.45;
+    }
+
+    .chat-bubble p {
+      margin-bottom: 0.5rem;
+    }
+    .chat-bubble p:last-child {
+      margin-bottom: 0;
+    }
+
+    .bubble-user {
+      align-self: flex-end;
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: var(--text-primary);
+      border-bottom-right-radius: 2px;
+    }
+
+    .bubble-agent {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #e2defa;
+      border-bottom-left-radius: 2px;
+    }
+
+    .chat-input-area {
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.15);
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      padding: 0.65rem 1rem;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.25s ease;
+    }
+
+    .chat-input:focus {
+      border-color: var(--accent-purple);
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+    }
+
+    /* Background Daemon Terminal */
+    .terminal-panel {
+      height: 250px;
+      flex: 0.8;
+      background: #04030a;
+      border: 1px solid rgba(139, 92, 246, 0.15);
+    }
+
+    .terminal-content {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      font-family: 'Fira Code', 'Courier New', monospace;
+      font-size: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .terminal-line {
+      display: flex;
+      gap: 0.5rem;
+      animation: text-appear 0.2s ease;
+      white-space: pre-wrap;
+    }
+
+    .term-time {
+      color: #4b3d75;
+      flex-shrink: 0;
+      user-select: none;
+    }
+
+    .term-msg {
+      flex: 1;
+    }
+
+    .msg-info { color: #8e85a6; }
+    .msg-warning { color: var(--accent-yellow); }
+    .msg-success { color: var(--accent-green); }
+    .msg-error { color: var(--accent-red); font-weight: bold; }
+
+    /* RIGHT SIDE: SENTINEL CONTROLS */
+    .right-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* Sentinel Switches */
+    .sentinel-switches {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .switch-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(139, 92, 246, 0.15);
+      border-radius: 10px;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .switch-card:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .switch-label-area {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .switch-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .switch-desc {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    /* Switch Slider styling */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.1);
+      transition: .3s;
+      border-radius: 34px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: var(--text-secondary);
+      transition: .3s;
+      border-radius: 50%;
+    }
+
+    input:checked + .slider {
+      background-color: rgba(139, 92, 246, 0.35);
+      border-color: var(--accent-purple);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+      background-color: #c084fc;
+      box-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+    }
+
+    /* Wallet and Staking Stats Grid */
+    .stats-card {
+      padding: 1.25rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .stat-box {
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 8px;
+      padding: 0.85rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .stat-box::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 10%;
+      width: 80%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+      opacity: 0.3;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 0.25rem;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .value-pros { color: #d8b4fe; }
+    .value-usdc { color: #60a5fa; }
+    .value-shield { color: #f87171; }
+    .value-staked { color: #34d399; }
+
+    /* Staking subtext */
+    .staking-summary {
+      font-size: 0.8rem;
+      background: rgba(16, 185, 129, 0.03);
+      border: 1px dashed rgba(16, 185, 129, 0.2);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Simulation area */
+    .simulation-area {
+      background: rgba(245, 158, 11, 0.02);
+      border: 1px dashed rgba(245, 158, 11, 0.2);
+      border-radius: 8px;
+      padding: 0.85rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .sim-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sim-buttons {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .sim-buttons button {
+      flex: 1;
+    }
+
+    /* Accordion Utilities */
+    .accordion {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .acc-item {
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .acc-trigger {
+      padding: 0.85rem 1.25rem;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.02);
+      border: none;
+      color: var(--text-primary);
+      text-align: left;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.2s ease;
+    }
+
+    .acc-trigger:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .acc-trigger .icon {
+      font-size: 1.1rem;
+      transition: transform 0.2s ease;
+    }
+
+    .acc-content {
+      padding: 1.25rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      display: none;
+      background: rgba(0, 0, 0, 0.15);
+    }
+
+    .acc-active .acc-content {
+      display: block;
+    }
+
+    .acc-active .acc-trigger .icon {
+      transform: rotate(90deg);
+    }
+
+    /* Diagnostic fields */
+    .metric-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      font-size: 0.85rem;
+    }
+    .metric-row:last-child {
+      border-bottom: none;
+    }
+    
+    .metric-label {
+      color: var(--text-secondary);
+    }
+
+    .metric-value {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+    }
+
+    .gauge-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+
+    .gauge-fill-bar {
+      width: 150px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .gauge-fill-val {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    
+    .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
+    .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--accent-yellow); }
+    .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .input-box {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-primary);
+      padding: 0.5rem 0.75rem;
+      font-family: inherit;
+      font-size: 0.85rem;
+      outline: none;
+    }
+
+    .input-box:focus {
+      border-color: var(--accent-purple);
+    }
+
+    .diagnostic-results {
+      padding: 0.75rem;
+      background: rgba(0,0,0,0.15);
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.03);
+      font-size: 0.8rem;
+    }
+
+    .factor-item {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.01);
+      padding: 0.4rem 0.6rem;
+      border-radius: 4px;
+      margin-bottom: 0.35rem;
+      border-left: 3px solid var(--accent-purple);
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255,255,255,0.05);
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer a {
+      color: var(--accent-purple);
+      text-decoration: none;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    /* Animations */
+    @keyframes pulse-glow {
+      0% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
+      100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.65); }
+    }
+
+    @keyframes message-pop {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes text-appear {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-container">
+        <img src="/logo.png" alt="Pharos SPN Sentinel Logo" style="width: 38px; height: 38px; border-radius: 8px; box-shadow: 0 0 15px rgba(139, 92, 246, 0.4); border: 1px solid rgba(139, 92, 246, 0.2); margin-right: 0.5rem; object-fit: cover;">
+        <div>
+          <h1>Pharos SPN Sentinel</h1>
+          <p>Autonomous AI Staking & Threat Security Sentinel</p>
+        </div>
+      </div>
+      <div class="header-links">
+        <a href="/api-docs" target="_blank" class="btn btn-secondary">📚 API Swagger Docs</a>
+        <a href="https://github.com/PharosNetwork" target="_blank" class="btn btn-secondary">🌐 Pharos GitHub</a>
+      </div>
+    </header>
+
+    <div class="workspace-grid">
+      <!-- LEFT COLUMN: CHAT CONSOLE AND DAEMON TERMINAL -->
+      <div class="left-section">
+        <!-- AI Agent Workspace -->
+        <section class="panel chat-panel">
+          <div class="panel-header">
+            <span class="panel-title">🤖 AI Agent Workspace</span>
+            <span class="panel-subtitle">Direct Chat with Guardian Sentinel</span>
+          </div>
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-bubble bubble-agent">
+              <p>Hello! I am your **Pharos Guardian Agent**.</p>
+              <p>I autonomously audit token smart contracts, optimize transaction gas fees (factoring in the Pharos EIP-1559 refund buffer), and monitor validator trust metrics to rebalance native restaking.</p>
+              <p>Type **"wallet status"** to inspect my active wallet counters or check the commands by asking **"help"**.</p>
+            </div>
+          </div>
+          <div class="chat-input-area">
+            <input type="text" class="chat-input" id="chat-input" placeholder="Type command (e.g. 'wallet status', 'audit [address]')..." onkeydown="if(event.key === 'Enter') sendChatMessage()">
+            <button class="btn btn-primary btn-sm" onclick="sendChatMessage()">Send</button>
+          </div>
+        </section>
+
+        <!-- Live Daemon Terminal -->
+        <section class="panel terminal-panel">
+          <div class="panel-header">
+            <span class="panel-title" style="color: var(--accent-purple);">📟 Background Daemon Logs</span>
+            <span class="panel-subtitle">Live Agent Logs</span>
+          </div>
+          <div class="terminal-content" id="terminal-content">
+            <!-- Dynamic lines -->
+            <div class="terminal-line"><span class="term-time">[--:--:--]</span><span class="term-msg msg-info">Daemon listener booting...</span></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT COLUMN: SENTINEL CONTROLS AND DIAGNOSTICS -->
+      <div class="right-section">
+        <!-- Sentinel Toggle Switches -->
+        <div class="sentinel-switches">
+          <div class="switch-card">
+            <div class="switch-label-area">
+              <span class="switch-title" style="color: var(--accent-yellow);">Auto-Defend</span>
+              <span class="switch-desc">Autonomous Threat Defense</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggle-defend" onchange="toggleAgentFeature('autoDefend', this.checked)" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="switch-card">
+            <div class="switch-label-area">
+              <span class="switch-title" style="color: var(--accent-green);">Auto-Stake</span>
+              <span class="switch-desc">Yield Staking Optimizer</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggle-stake" onchange="toggleAgentFeature('autoStake', this.checked)" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Wallet and Staking Stats Panel -->
+        <section class="panel stats-card">
+          <div class="panel-title" style="margin-bottom: 1rem;"><span class="icon">💼</span> Agent Wallet & Staking</div>
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="stat-label">Idle PROS</div>
+              <div class="stat-value value-pros" id="balance-pros">1250.00</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Staked PROS</div>
+              <div class="stat-value value-staked" id="balance-staked">5000.00</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">USDC Balance</div>
+              <div class="stat-value value-usdc" id="balance-usdc">250.00</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">SHIELD (Risky)</div>
+              <div class="stat-value value-shield" id="balance-shield">0.00</div>
+            </div>
+          </div>
+          <div class="staking-summary">
+            <div>
+              <span style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase;">Active Yield Node</span>
+              <div style="font-weight: 600; font-size: 0.85rem;" id="staking-validator">0x51b11...f015</div>
+            </div>
+            <div style="text-align: right;">
+              <span class="badge badge-success">5.8% APY</span>
+              <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.2rem;">Low Risk Profile</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Simulation Control Panel -->
+        <section class="panel simulation-area">
+          <div class="sim-header">
+            <span class="panel-title" style="font-size: 0.95rem; color: var(--accent-yellow);"><span class="icon">⚡</span> Simulation Sandbox</span>
+            <span style="font-size: 0.75rem; color: var(--text-secondary);">Test Autonomous Loops</span>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">
+            Inject simulation blocks into the agent loops to test threat mitigation and yield auto-staking.
+          </div>
+          <div class="sim-buttons">
+            <button class="btn btn-danger btn-sm" onclick="triggerSimulation('threat')">☣️ Simulate Threat Attack</button>
+            <button class="btn btn-secondary btn-sm" onclick="triggerSimulation('yield')">💸 Trigger Stake Check</button>
+          </div>
+        </section>
+
+        <!-- Accordion Utility Tools -->
+        <div class="accordion">
+          <!-- contract auditor -->
+          <div class="acc-item" id="acc-audit">
+            <button class="acc-trigger" onclick="toggleAccordion('acc-audit')">
+              <span>🛡️ Smart Contract Bytecode Auditor</span>
+              <span class="icon">▶</span>
+            </button>
+            <div class="acc-content">
+              <div class="input-group">
+                <input type="text" class="input-box" id="manual-audit-addr" placeholder="Contract address to scan (0x...)" value="0xcfC8330f4BCAB529c625D12781b1C19466A9Fc8B">
+                <button class="btn btn-primary btn-sm" onclick="runManualAudit()">Audit</button>
+              </div>
+              <div class="diagnostic-results" id="manual-audit-results" style="display: none;">
+                <div class="gauge-container">
+                  <span style="font-weight: 600;">Safety Score:</span>
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div class="gauge-fill-bar"><div class="gauge-fill-val" id="manual-audit-fill"></div></div>
+                    <span id="manual-audit-score">100%</span>
+                  </div>
+                </div>
+                <div class="metric-row">
+                  <span class="metric-label">Assessment</span>
+                  <span id="manual-audit-badge">SAFE</span>
+                </div>
+                <div style="margin-top: 0.5rem;" id="manual-audit-factors"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- gas optimizer -->
+          <div class="acc-item" id="acc-gas">
+            <button class="acc-trigger" onclick="toggleAccordion('acc-gas')">
+              <span>⛽ Gas Price & Refund Optimizer</span>
+              <span class="icon">▶</span>
+            </button>
+            <div class="acc-content">
+              <button class="btn btn-secondary btn-sm" style="width: 100%; margin-bottom: 0.75rem;" onclick="runManualGas()">Fetch Gas Parameters</button>
+              <div class="diagnostic-results" id="manual-gas-results" style="display: none;">
+                <div class="metric-row"><span class="metric-label">Base Fee</span><span class="metric-value" id="manual-gas-base">--</span></div>
+                <div class="metric-row"><span class="metric-label">Priority Fee</span><span class="metric-value" id="manual-gas-priority">--</span></div>
+                <div class="metric-row"><span class="metric-label">Max Fee (Buffer)</span><span class="metric-value" id="manual-gas-max" style="color: var(--accent-purple);">--</span></div>
+                <div class="metric-row"><span class="metric-label">Congestion Level</span><span class="metric-value" id="manual-gas-congestion">--</span></div>
+                <div class="metric-row"><span class="metric-label">Optimal Action Window</span><span class="metric-value" id="manual-gas-window">--</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- validator trust -->
+          <div class="acc-item" id="acc-trust">
+            <button class="acc-trigger" onclick="toggleAccordion('acc-trust')">
+              <span>🔍 Blockscout Validator Trust Assessor</span>
+              <span class="icon">▶</span>
+            </button>
+            <div class="acc-content">
+              <div class="input-group">
+                <input type="text" class="input-box" id="manual-trust-addr" placeholder="Validator address (0x...)" value="0x51b111109964d9eb43da7a7dc6d0917d551fb015">
+                <button class="btn btn-primary btn-sm" onclick="runManualTrust()">Assess</button>
+              </div>
+              <div class="diagnostic-results" id="manual-trust-results" style="display: none;">
+                <div class="metric-row"><span class="metric-label">Decentralization Score</span><span class="metric-value" id="manual-trust-l1-decent">--</span></div>
+                <div class="metric-row"><span class="metric-label">Nakamoto Coefficient</span><span class="metric-value" id="manual-trust-l1-nak">--</span></div>
+                <div class="metric-row"><span class="metric-label">ETH Balance (Ethereum)</span><span class="metric-value" id="manual-trust-eth-bal">--</span></div>
+                <div class="metric-row"><span class="metric-label">Normal Txs (Ethereum)</span><span class="metric-value" id="manual-trust-eth-tx">--</span></div>
+                <div class="metric-row"><span class="metric-label">Reputation Score</span><span class="metric-value" id="manual-trust-score">--</span></div>
+                <div class="metric-row"><span class="metric-label">Concentration Risk</span><span class="metric-value" id="manual-trust-risk">--</span></div>
+                <div style="margin-top: 0.5rem;" id="manual-trust-factors"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      <div>Pharos SPN Sentinel • Composable AI-Agent Safety Skill Suite</div>
+      <div>Running locally on <a href="http://localhost:3000">localhost:3000</a></div>
+    </footer>
+  </div>
+
+  <script>
+    let logCount = 0;
+    let knownLogTimestamps = new Set();
+
+    document.addEventListener("DOMContentLoaded", () => {
+      fetchAgentStatus();
+      setInterval(fetchAgentStatus, 3000); // Poll agent status/logs every 3 seconds
+    });
+
+    function toggleAccordion(id) {
+      const item = document.getElementById(id);
+      const active = item.classList.contains('acc-active');
+      
+      // Close all
+      document.querySelectorAll('.acc-item').forEach(i => i.classList.remove('acc-active'));
+      
+      if (!active) {
+        item.classList.add('acc-active');
+        if (id === 'acc-gas') runManualGas();
+      }
+    }
+
+    async function fetchAgentStatus() {
+      try {
+        const response = await fetch('/api/agent/status');
+        if (!response.ok) throw new Error('Failed to fetch status');
+        const data = await response.json();
+        
+        // Update toggles
+        document.getElementById('toggle-defend').checked = data.autoDefend;
+        document.getElementById('toggle-stake').checked = data.autoStake;
+
+        // Update balances
+        document.getElementById('balance-pros').innerText = data.wallet.prosBalance.toFixed(2);
+        document.getElementById('balance-staked').innerText = data.wallet.stakedPros.toFixed(2);
+        document.getElementById('balance-usdc').innerText = data.wallet.usdcBalance.toFixed(2);
+        document.getElementById('balance-shield').innerText = data.wallet.shieldBalance.toFixed(2);
+        
+        // Staking details
+        document.getElementById('staking-validator').innerText = 
+          data.wallet.delegatedValidator.substring(0, 7) + '...' + data.wallet.delegatedValidator.substring(37);
+
+        // Update Terminal Logs
+        const terminal = document.getElementById('terminal-content');
+        terminal.innerHTML = '';
+        
+        if (data.logs && data.logs.length > 0) {
+          // Reverse to display chronological order in terminal
+          const sortedLogs = [...data.logs].reverse();
+          sortedLogs.forEach(log => {
+            const timeStr = new Date(log.timestamp).toLocaleTimeString();
+            const line = document.createElement('div');
+            line.className = 'terminal-line';
+            line.innerHTML = `<span class="term-time">[${timeStr}]</span><span class="term-msg msg-${log.level}">${escapeHtml(log.message)}</span>`;
+            terminal.appendChild(line);
+          });
+          terminal.scrollTop = terminal.scrollHeight;
+        } else {
+          terminal.innerHTML = '<div class="terminal-line"><span class="term-time">[--:--:--]</span><span class="term-msg msg-info">No logs recorded.</span></div>';
+        }
+      } catch (err) {
+        console.error('Error fetching agent status:', err);
+      }
+    }
+
+    async function toggleAgentFeature(feature, enabled) {
+      try {
+        const response = await fetch('/api/agent/toggle', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ feature, enabled })
+        });
+        if (!response.ok) throw new Error('Toggle request failed');
+        fetchAgentStatus();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function triggerSimulation(type) {
+      try {
+        const response = await fetch('/api/agent/trigger-activity', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type })
+        });
+        if (!response.ok) throw new Error('Simulation trigger failed');
+        
+        // Display user notifications
+        const chatMessages = document.getElementById('chat-messages');
+        const alertBubble = document.createElement('div');
+        alertBubble.className = 'chat-bubble bubble-user';
+        alertBubble.innerHTML = `<p>⚠️ *Triggered simulated ${type} event.*</p>`;
+        chatMessages.appendChild(alertBubble);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        fetchAgentStatus();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function sendChatMessage() {
+      const input = document.getElementById('chat-input');
+      const message = input.value.trim();
+      if (!message) return;
+
+      input.value = '';
+      
+      const chatMessages = document.getElementById('chat-messages');
+      
+      // Append user bubble
+      const userBubble = document.createElement('div');
+      userBubble.className = 'chat-bubble bubble-user';
+      userBubble.innerHTML = `<p>${escapeHtml(message)}</p>`;
+      chatMessages.appendChild(userBubble);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      // Append typing indicator
+      const typingBubble = document.createElement('div');
+      typingBubble.className = 'chat-bubble bubble-agent';
+      typingBubble.id = 'agent-typing';
+      typingBubble.innerHTML = `<p><em>Thinking...</em></p>`;
+      chatMessages.appendChild(typingBubble);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      try {
+        const response = await fetch('/api/agent/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message })
+        });
+        
+        // Remove typing
+        const typing = document.getElementById('agent-typing');
+        if (typing) typing.remove();
+
+        if (!response.ok) throw new Error('Chat failed');
+        const data = await response.json();
+        
+        // Append agent response bubble
+        const agentBubble = document.createElement('div');
+        agentBubble.className = 'chat-bubble bubble-agent';
+        agentBubble.innerHTML = formatMarkdown(data.reply);
+        chatMessages.appendChild(agentBubble);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        // Update state
+        fetchAgentStatus();
+      } catch (err) {
+        const typing = document.getElementById('agent-typing');
+        if (typing) typing.remove();
+        
+        const errorBubble = document.createElement('div');
+        errorBubble.className = 'chat-bubble bubble-agent';
+        errorBubble.innerHTML = `<p style="color: var(--accent-red);">Error: ${escapeHtml(err.message)}</p>`;
+        chatMessages.appendChild(errorBubble);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+    }
+
+    // Diagnostics Manual Operations
+    async function runManualAudit() {
+      const address = document.getElementById('manual-audit-addr').value.trim();
+      if (!address) return;
+      
+      const resultsDiv = document.getElementById('manual-audit-results');
+      resultsDiv.style.display = 'block';
+      resultsDiv.innerHTML = '<p>Auditing contract bytecode on-chain...</p>';
+
+      try {
+        const response = await fetch(`/api/audit-token?address=${encodeURIComponent(address)}`);
+        if (!response.ok) throw new Error('Audit failed');
+        const data = await response.json();
+
+        let badgeClass = data.recommendation === 'SAFE' ? 'badge-success' : 
+                         data.recommendation === 'CAUTION' ? 'badge-warning' : 'badge-danger';
+                         
+        resultsDiv.innerHTML = `
+          <div class="gauge-container">
+            <span style="font-weight: 600;">Safety Score:</span>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <div class="gauge-fill-bar"><div class="gauge-fill-val" style="width: ${data.safetyScore}%"></div></div>
+              <span>${data.safetyScore}%</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <span class="metric-label">Assessment</span>
+            <span class="badge ${badgeClass}">${data.recommendation}</span>
+          </div>
+          <div style="margin-top: 0.5rem;" id="manual-audit-factors"></div>
+        `;
+
+        const factorsDiv = document.getElementById('manual-audit-factors');
+        data.details.forEach(detail => {
+          const item = document.createElement('div');
+          item.className = 'factor-item';
+          if (detail.startsWith('✓')) item.style.borderLeftColor = 'var(--accent-green)';
+          else if (detail.startsWith('⚠️')) item.style.borderLeftColor = 'var(--accent-yellow)';
+          else if (detail.startsWith('❌')) item.style.borderLeftColor = 'var(--accent-red)';
+          item.innerText = detail;
+          factorsDiv.appendChild(item);
+        });
+      } catch (err) {
+        resultsDiv.innerHTML = `<p style="color: var(--accent-red);">Audit failed: ${err.message}</p>`;
+      }
+    }
+
+    async function runManualGas() {
+      const resultsDiv = document.getElementById('manual-gas-results');
+      resultsDiv.style.display = 'block';
+      resultsDiv.innerHTML = '<p>Calculating optimal transaction parameters...</p>';
+
+      try {
+        const response = await fetch('/api/gas-estimate');
+        if (!response.ok) throw new Error('Gas calculation failed');
+        const data = await response.json();
+
+        let badgeClass = data.networkCongestion === 'LOW' ? 'badge-success' : 
+                         data.networkCongestion === 'MEDIUM' ? 'badge-warning' : 'badge-danger';
+
+        resultsDiv.innerHTML = `
+          <div class="metric-row"><span class="metric-label">Base Fee</span><span class="metric-value">${data.currentBaseFee}</span></div>
+          <div class="metric-row"><span class="metric-label">Priority Fee</span><span class="metric-value">${data.priorityFee}</span></div>
+          <div class="metric-row"><span class="metric-label">Max Fee (Buffer)</span><span class="metric-value" style="color: var(--accent-purple);">${data.maxFeePerGas}</span></div>
+          <div class="metric-row"><span class="metric-label">Congestion Level</span><span class="metric-value"><span class="badge ${badgeClass}">${data.networkCongestion}</span></span></div>
+          <div class="metric-row"><span class="metric-label">Optimal Action Window</span><span class="metric-value">${data.optimalTimeWindow}</span></div>
+        `;
+      } catch (err) {
+        resultsDiv.innerHTML = `<p style="color: var(--accent-red);">Gas fetch failed: ${err.message}</p>`;
+      }
+    }
+
+    async function runManualTrust() {
+      const address = document.getElementById('manual-trust-addr').value.trim();
+      if (!address) return;
+
+      const resultsDiv = document.getElementById('manual-trust-results');
+      resultsDiv.style.display = 'block';
+      resultsDiv.innerHTML = '<p>Evaluating validator credentials...</p>';
+
+      try {
+        const response = await fetch(`/api/validator-trust?address=${encodeURIComponent(address)}`);
+        if (!response.ok) throw new Error('Trust check failed');
+        const data = await response.json();
+
+        let badgeClass = data.validatorConcentrationRisk === 'LOW' ? 'badge-success' : 
+                         data.validatorConcentrationRisk === 'MEDIUM' ? 'badge-warning' : 'badge-danger';
+
+        resultsDiv.innerHTML = `
+          <div class="metric-row"><span class="metric-label">Decentralization Score</span><span class="metric-value">${data.decentralizationScore}/100</span></div>
+          <div class="metric-row"><span class="metric-label">Nakamoto Coefficient</span><span class="metric-value">${data.nakamotoCoeff}</span></div>
+          <div class="metric-row"><span class="metric-label">ETH Balance (Ethereum)</span><span class="metric-value">${data.ethereumProfile.balanceEth} ETH</span></div>
+          <div class="metric-row"><span class="metric-label">Normal Txs (Ethereum)</span><span class="metric-value">${data.ethereumProfile.transactionCount}</span></div>
+          <div class="metric-row"><span class="metric-label">Reputation Score</span><span class="metric-value" style="color: var(--accent-purple);">${data.ethereumProfile.reputationScore}/100</span></div>
+          <div class="metric-row"><span class="metric-label">Concentration Risk</span><span class="metric-value"><span class="badge ${badgeClass}">${data.validatorConcentrationRisk}</span></span></div>
+          <div style="margin-top: 0.5rem;" id="manual-trust-factors"></div>
+        `;
+
+        const factorsDiv = document.getElementById('manual-trust-factors');
+        data.details.forEach(detail => {
+          const item = document.createElement('div');
+          item.className = 'factor-item';
+          item.innerText = detail;
+          factorsDiv.appendChild(item);
+        });
+      } catch (err) {
+        resultsDiv.innerHTML = `<p style="color: var(--accent-red);">Trust check failed: ${err.message}</p>`;
+      }
+    }
+
+    // Helpers
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function formatMarkdown(text) {
+      // Basic parser to replace **bold**, `code`, and newlines
+      let formatted = escapeHtml(text);
+      formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      formatted = formatted.replace(/`(.*?)`/g, '<code style="background: rgba(255,255,255,0.06); padding: 0.1rem 0.3rem; border-radius: 4px; font-family: monospace;">$1</code>');
+      formatted = formatted.replace(/\n/g, '<br>');
+      return `<p>${formatted}</p>`;
+    }
+  </script>
+</body>
+</html>

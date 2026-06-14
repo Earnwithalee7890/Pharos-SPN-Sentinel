@@ -16,8 +16,13 @@ export class PharosProvider {
       chainId: 1672 
     });
 
-    if (process.env.PRIVATE_KEY) {
-      this.wallet = new Wallet(process.env.PRIVATE_KEY, this.provider);
+    const pk = process.env.PRIVATE_KEY;
+    if (pk && pk !== 'your_private_key_here' && pk.trim() !== '') {
+      try {
+        this.wallet = new Wallet(pk, this.provider);
+      } catch (error) {
+        console.warn('⚠️ Warning: Invalid PRIVATE_KEY provided. Running in read-only mode.');
+      }
     }
   }
 
