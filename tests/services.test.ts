@@ -16,6 +16,7 @@ vi.mock('../src/core/pharos-provider', () => {
     PharosProvider: {
       getInstance: () => ({
         getProvider: () => mockProvider,
+        getWallet: () => undefined,
       }),
     },
   };

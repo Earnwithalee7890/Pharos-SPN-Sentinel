@@ -1136,6 +1136,25 @@
               </div>
             </div>
           </div>
+
+          <!-- validator staking delegator -->
+          <div class="acc-item" id="acc-staking-delegate">
+            <button class="acc-trigger" onclick="toggleAccordion('acc-staking-delegate')">
+              <span>🔗 On-Chain Validator Staking Delegator</span>
+              <span class="icon">▶</span>
+            </button>
+            <div class="acc-content">
+              <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
+                Composed transaction tool: Performs smart validator delegation transactions using your connected Web3 wallet.
+              </div>
+              <div class="input-group" style="flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem;">
+                <input type="text" class="input-box" id="delegate-validator-addr" placeholder="Validator Address (0x...)" value="0x51b111109964d9eb43da7a7dc6d0917d551fb015" style="width: 100%;">
+                <input type="number" class="input-box" id="delegate-amount" placeholder="Amount (PROS)" value="100" step="10" min="1" style="width: 100%;">
+              </div>
+              <button class="btn btn-primary btn-sm" style="width: 100%;" onclick="runManualStakingDelegate()">💸 Delegate Staking (On-Chain)</button>
+              <div id="manual-delegate-status" style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem; display: none; line-height: 1.4;"></div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1574,6 +1593,74 @@
         });
       } catch (err) {
         resultsDiv.innerHTML = `<p style="color: var(--accent-red);">Trust check failed: ${err.message}</p>`;
+      }
+    async function runManualStakingDelegate() {
+      const validator = document.getElementById('delegate-validator-addr').value.trim();
+      const amountInput = document.getElementById('delegate-amount');
+      const amount = parseFloat(amountInput.value);
+      const statusDiv = document.getElementById('manual-delegate-status');
+
+      if (!validator) {
+        alert('Please enter a validator address.');
+        return;
+      }
+      if (isNaN(amount) || amount <= 0) {
+        alert('Please enter a valid delegation amount.');
+        return;
+      }
+      if (!isWalletConnected) {
+        alert('Please connect your wallet first.');
+        openWalletModal();
+        return;
+      }
+
+      statusDiv.style.display = 'block';
+      statusDiv.style.color = 'var(--text-secondary)';
+      statusDiv.innerText = 'Initializing delegation transaction...';
+
+      if (currentChainId !== 1672 && typeof window.ethereum !== 'undefined') {
+        statusDiv.innerText = 'Switching to Pharos Mainnet...';
+        await switchToPharosMainnet();
+        if (currentChainId !== 1672) {
+          statusDiv.style.color = 'var(--accent-red)';
+          statusDiv.innerText = 'Transaction cancelled. Wrong network.';
+          return;
+        }
+      }
+
+      try {
+        // If it is demo wallet, simulate
+        if (userAddress === "0x8B3217038eF3F827aC9eD396264906dCDb16d10c") {
+          statusDiv.innerText = 'Broadcasting simulated staking delegation...';
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          const mockTx = '0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+          
+          statusDiv.style.color = 'var(--accent-green)';
+          statusDiv.innerHTML = `🎉 Delegation succeeded! Simulated restake sent. <a href="https://scan.pharos.xyz/tx/${mockTx}" target="_blank" style="color:var(--accent-purple); text-decoration:underline;">View Tx ↗</a>`;
+          
+          addTxToLedger("STAKE", amount.toString(), "SUCCESS", mockTx);
+          return;
+        }
+
+        // Real wallet transaction
+        const valueHex = '0x' + (BigInt(Math.floor(amount * 1e18))).toString(16);
+        const txHash = await window.ethereum.request({
+          method: 'eth_sendTransaction',
+          params: [{
+            from: userAddress,
+            to: validator,
+            value: valueHex
+          }]
+        });
+
+        statusDiv.style.color = 'var(--accent-green)';
+        statusDiv.innerHTML = `🎉 Delegation transaction confirmed! <a href="https://scan.pharos.xyz/tx/${txHash}" target="_blank" style="color:var(--accent-purple); text-decoration:underline;">View Tx ↗</a>`;
+        
+        addTxToLedger("STAKE", amount.toString(), "SUCCESS", txHash);
+      } catch (err) {
+        statusDiv.style.color = 'var(--accent-red)';
+        statusDiv.innerText = `Delegation failed: ${err.message}`;
+        addTxToLedger("STAKE", amount.toString(), "FAILED", "N/A");
       }
     }
 

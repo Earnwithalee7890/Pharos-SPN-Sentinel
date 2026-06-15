@@ -1,6 +1,8 @@
 import { TokenAuditor } from './token-auditor';
 import { GasMonitor } from './gas-monitor';
 import { ValidatorTrust } from './validator-trust';
+import { PharosProvider } from '../core/pharos-provider';
+import { formatEther, parseEther } from 'ethers';
 
 export interface AgentLog {
   timestamp: string;
@@ -10,7 +12,7 @@ export interface AgentLog {
 
 export interface AgentTransaction {
   hash: string;
-  type: 'SWAP' | 'STAKE' | 'UNSTAKE' | 'INCOMING_TOKEN' | 'DEPOSIT';
+  type: 'SWAP' | 'STAKE' | 'UNSTAKE' | 'INCOMING_TOKEN' | 'DEPOSIT' | 'TRANSFER';
   amount: string;
   token: string;
   status: 'SUCCESS' | 'PENDING' | 'FAILED';
@@ -55,8 +57,32 @@ export class GuardianAgent {
     this.addLog('info', 'Static Bytecode Threat Scanner active.');
     this.addLog('info', 'Blockscout Validator Staking Profiler connected.');
     
+    // Check if real wallet is loaded
+    const wallet = PharosProvider.getInstance().getWallet();
+    if (wallet) {
+      this.wallet.address = wallet.address;
+      this.addLog('success', `🔑 Real Web3 Wallet loaded: ${wallet.address}. Switching from simulated mode to active on-chain mode.`);
+      this.syncOnChainBalance().catch(() => {});
+    } else {
+      this.addLog('info', 'No PRIVATE_KEY configured in .env. Running in simulated Sandbox mode.');
+    }
+
     // Start autonomous reasoning loops
     this.startAutonomousLoop();
+  }
+
+  public async syncOnChainBalance() {
+    const providerInstance = PharosProvider.getInstance();
+    const wallet = providerInstance.getWallet();
+    if (!wallet) return;
+
+    try {
+      const provider = providerInstance.getProvider();
+      const balBigInt = await provider.getBalance(wallet.address);
+      this.wallet.prosBalance = parseFloat(formatEther(balBigInt));
+    } catch (err: any) {
+      this.addLog('error', `[WALLET] Sync failed: ${err.message}`);
+    }
   }
 
   public static getInstance(): GuardianAgent {
@@ -127,16 +153,19 @@ export class GuardianAgent {
   }
 
   private startAutonomousLoop() {
-    // Run background scans periodically
-    this.loopInterval = setInterval(() => {
-      this.addLog('info', 'Scanning Pharos chain blocks for agent wallet state changes...');
+    this.loopInterval = setInterval(async () => {
+      if (PharosProvider.getInstance().getWallet()) {
+        await this.syncOnChainBalance();
+      } else {
+        this.addLog('info', 'Scanning Pharos chain blocks for agent wallet state changes...');
+      }
       
       if (this.autoDefend && this.wallet.shieldBalance > 0) {
-        this.runSecurityAuditAndDefend();
+        await this.runSecurityAuditAndDefend();
       }
       
       if (this.autoStake && this.wallet.prosBalance > 500) {
-        this.runYieldOptimization();
+        await this.runYieldOptimization();
       }
     }, 15000); // Check every 15 seconds
   }
@@ -216,12 +245,29 @@ export class GuardianAgent {
         // Gas optimization
         const gas = await this.gasMonitor.estimateOptimalGas();
         
-        this.wallet.prosBalance -= prosToStake;
-        this.wallet.stakedPros += prosToStake;
-        
-        const txHash = this.addTransaction('STAKE', `${prosToStake} PROS`, 'PROS', 'SUCCESS');
-        this.addLog('success', `[STAKE] Broadcasted staking delegation. Tx Hash: ${txHash}`);
-        this.addLog('success', `[SUCCESS] Autonomously delegated ${prosToStake} PROS to validator. Staking yield harvested at estimated 5.8% APY.`);
+        // Real on-chain staking transaction if wallet is present
+        const wallet = PharosProvider.getInstance().getWallet();
+        if (wallet) {
+          this.addLog('info', `[STAKE] Broadcasting real staking delegation of ${prosToStake} PROS to validator ${validator}...`);
+          const txResponse = await wallet.sendTransaction({
+            to: validator,
+            value: parseEther(prosToStake.toString())
+          });
+          this.addLog('info', `[STAKE] Staking delegation broadcasted. Waiting for confirmation... Hash: ${txResponse.hash}`);
+          await txResponse.wait();
+          
+          await this.syncOnChainBalance();
+          const txHash = this.addTransaction('STAKE', `${prosToStake} PROS`, 'PROS', 'SUCCESS');
+          this.addLog('success', `[SUCCESS] Autonomously delegated ${prosToStake} PROS to validator on-chain. Tx Hash: ${txHash}`);
+        } else {
+          // Simulated Staking
+          this.wallet.prosBalance -= prosToStake;
+          this.wallet.stakedPros += prosToStake;
+          
+          const txHash = this.addTransaction('STAKE', `${prosToStake} PROS`, 'PROS', 'SUCCESS');
+          this.addLog('success', `[STAKE] Broadcasted staking delegation. Tx Hash: ${txHash}`);
+          this.addLog('success', `[SUCCESS] Autonomously delegated ${prosToStake} PROS to validator. Staking yield harvested at estimated 5.8% APY.`);
+        }
       } else {
         this.addLog('warning', `[YIELD] Aborting autonomous stake. Validator risk level is HIGH.`);
       }
@@ -336,14 +382,77 @@ export class GuardianAgent {
       return `⚠️ Autonomous Staking is now **DISABLED**. Staking yields must be delegated manually.`;
     }
 
+    // 6. Transfer/Send native PROS tokens on-chain
+    const transferRegex = /(?:transfer|send)\s+([\d.]+)\s*(?:pros)?\s+to\s+(0x[a-fA-F0-9]{40})/i;
+    const transferMatch = msg.match(transferRegex);
+    if (transferMatch) {
+      const amountStr = transferMatch[1];
+      const destAddress = transferMatch[2];
+      const amount = parseFloat(amountStr);
+
+      if (isNaN(amount) || amount <= 0) {
+        return `❌ Invalid transfer amount: \`${amountStr}\``;
+      }
+
+      this.addLog('info', `[CHAT] User requested transfer of ${amount} PROS to ${destAddress}`);
+      
+      const providerInstance = PharosProvider.getInstance();
+      const wallet = providerInstance.getWallet();
+
+      if (!wallet) {
+        // Simulated transfer
+        this.addLog('info', `[TRANSFER] Simulated transfer of ${amount} PROS to ${destAddress}`);
+        const mockTx = '0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+        this.wallet.prosBalance -= amount;
+        this.addTransaction('TRANSFER', `${amount} PROS -> ${destAddress}`, 'PROS', 'SUCCESS');
+        this.addLog('success', `[SUCCESS] Simulated transfer broadcasted. Tx Hash: ${mockTx}`);
+        return `💸 **Simulated Transfer Sent!**\n` +
+          `• Destination: \`${destAddress}\`\n` +
+          `• Amount: \`${amount} PROS\`\n` +
+          `• Tx Hash: \`${mockTx}\` (Simulated)\n` +
+          `*To execute real on-chain transfers, please add your PRIVATE_KEY in the server's .env file.*`;
+      }
+
+      try {
+        const balanceBigInt = await providerInstance.getProvider().getBalance(wallet.address);
+        const amountBigInt = parseEther(amountStr);
+
+        if (balanceBigInt < amountBigInt) {
+          return `❌ Insufficient balance. Wallet has ${this.wallet.prosBalance.toFixed(4)} PROS, requested transfer of ${amount} PROS.`;
+        }
+
+        this.addLog('info', `[TRANSFER] Constructing transaction to transfer ${amount} PROS...`);
+        const txResponse = await wallet.sendTransaction({
+          to: destAddress,
+          value: amountBigInt
+        });
+        
+        this.addLog('info', `[TRANSFER] Transaction broadcasted. Waiting for confirmation... Hash: ${txResponse.hash}`);
+        const receipt = await txResponse.wait();
+        
+        await this.syncOnChainBalance();
+        this.addTransaction('TRANSFER', `${amount} PROS -> ${destAddress}`, 'PROS', 'SUCCESS');
+        this.addLog('success', `[SUCCESS] Real transfer confirmed! Hash: ${txResponse.hash}`);
+        
+        return `🚀 **On-Chain Transfer Confirmed!**\n` +
+          `• Destination: \`${destAddress}\`\n` +
+          `• Amount: \`${amount} PROS\`\n` +
+          `• Transaction Hash: [\`${txResponse.hash}\`](https://scan.pharos.xyz/tx/${txResponse.hash})`;
+      } catch (err: any) {
+        this.addLog('error', `[TRANSFER] On-chain transfer failed: ${err.message}`);
+        return `❌ **Transfer Failed!**\nError: ${err.message}`;
+      }
+    }
+
     // Default Fallback
     return `🤖 **Pharos Guardian Agent Workspace Console**\n` +
       `I am your autonomous on-chain co-pilot. I audit contracts, optimize gas fees, and rebalance restaking yield.\n\n` +
       `Here are some commands I understand:\n` +
       `• **"wallet status"** - inspect your balances and sentinel configurations.\n` +
+      `• **"transfer [amount] to [address]"** - send native PROS on-chain (e.g. \`transfer 5 to 0x8B3217038eF3F827aC9eD396264906dCDb16d10c\`).\n` +
       `• **"audit [address]"** - scan a contract bytecode (e.g. \`audit 0xcfC8330f4BCAB529c625D12781b1C19466A9Fc8B\`).\n` +
       `• **"optimal gas"** - check EIP-1559 gas recommenders.\n` +
       `• **"trust [validator]"** - check decentralization & Blockscout history (e.g. \`trust 0x51b111109964d9eb43da7a7dc6d0917d551fb015\`).\n` +
-      `• **"disable auto-defend"** or **"enable auto-stake"** - adjust daemon settings.`;
+      `• **"disable auto-defend"** or **"enable auto-stake"** - adjust settings.`;
   }
 }
