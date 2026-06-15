@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pharos SPN Sentinel — AI Agent Control Center</title>
   <meta name="description" content="Autonomous AI Guardian Agent for Pharos Network. Secures transactions, audits bytecode, and optimizes staking yields.">
-  <link rel="icon" type="image/png" href="/logo.png">
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,19 +13,19 @@
   
   <style>
     :root {
-      --bg-dark: #0a0814;
-      --bg-panel: rgba(18, 14, 36, 0.6);
-      --bg-panel-hover: rgba(26, 21, 51, 0.75);
-      --border-color: rgba(139, 92, 246, 0.2);
-      --border-color-glow: rgba(139, 92, 246, 0.5);
-      --text-primary: #f8f7fc;
-      --text-secondary: #a49cb3;
+      --bg-dark: #030208;
+      --bg-panel: rgba(10, 8, 22, 0.65);
+      --bg-panel-hover: rgba(16, 13, 34, 0.8);
+      --border-color: rgba(139, 92, 246, 0.16);
+      --border-color-glow: rgba(139, 92, 246, 0.45);
+      --text-primary: #f5f4f8;
+      --text-secondary: #9a93a8;
       --accent-purple: #8b5cf6;
       --accent-blue: #3b82f6;
       --accent-green: #10b981;
       --accent-yellow: #f59e0b;
       --accent-red: #ef4444;
-      --glow-purple: rgba(139, 92, 246, 0.25);
+      --glow-purple: rgba(139, 92, 246, 0.2);
     }
 
     * {
@@ -41,21 +40,18 @@
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.1);
+      background: rgba(0, 0, 0, 0.2);
     }
     ::-webkit-scrollbar-thumb {
-      background: rgba(139, 92, 246, 0.3);
+      background: rgba(139, 92, 246, 0.25);
       border-radius: 3px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: rgba(139, 92, 246, 0.5);
+      background: rgba(139, 92, 246, 0.45);
     }
 
     body {
       background-color: var(--bg-dark);
-      background-image: 
-        radial-gradient(circle at 5% 5%, rgba(139, 92, 246, 0.12) 0%, transparent 45%),
-        radial-gradient(circle at 95% 85%, rgba(59, 130, 246, 0.1) 0%, transparent 45%);
       color: var(--text-primary);
       font-family: 'Outfit', sans-serif;
       min-height: 100vh;
@@ -63,6 +59,29 @@
       flex-direction: column;
       overflow-x: hidden;
       line-height: 1.5;
+      position: relative;
+    }
+
+    /* Ambient 3D Backlight Glows */
+    .glow-sphere {
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      filter: blur(130px);
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.14;
+    }
+    .glow-1 {
+      background: var(--accent-purple);
+      top: 5%;
+      left: -100px;
+    }
+    .glow-2 {
+      background: var(--accent-blue);
+      bottom: 10%;
+      right: -100px;
     }
 
     .container {
@@ -73,6 +92,7 @@
       flex: 1;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
 
     /* Header */
@@ -82,31 +102,27 @@
       align-items: center;
       margin-bottom: 1.5rem;
       padding-bottom: 1rem;
-      border-bottom: 1px solid rgba(139, 92, 246, 0.15);
+      border-bottom: 1px solid rgba(139, 92, 246, 0.12);
     }
 
     .logo-container {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.85rem;
     }
 
-    .logo-glow {
-      width: 36px;
-      height: 36px;
-      background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.35rem;
-      box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
-      animation: pulse-glow 2s infinite alternate;
+    .logo-img {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(139, 92, 246, 0.45);
+      border: 1px solid rgba(139, 92, 246, 0.25);
+      object-fit: cover;
     }
 
     header h1 {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.75rem;
+      font-size: 1.6rem;
       font-weight: 700;
       background: linear-gradient(135deg, #fff 40%, var(--accent-purple), var(--accent-blue));
       -webkit-background-clip: text;
@@ -116,18 +132,20 @@
 
     header p {
       color: var(--text-secondary);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
 
     .header-links {
       display: flex;
       gap: 0.75rem;
+      align-items: center;
     }
 
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 0.5rem;
       padding: 0.55rem 1.25rem;
       font-family: 'Space Grotesk', sans-serif;
       font-weight: 600;
@@ -142,12 +160,12 @@
       background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
       color: #fff;
       border: none;
-      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.35);
     }
 
     .btn-primary:hover {
       transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.45);
+      box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
     }
 
     .btn-secondary {
@@ -162,15 +180,14 @@
     }
 
     .btn-danger {
-      background: rgba(239, 68, 68, 0.15);
+      background: rgba(239, 68, 68, 0.12);
       color: #ff6b6b;
-      border: 1px solid rgba(239, 68, 68, 0.3);
+      border: 1px solid rgba(239, 68, 68, 0.25);
     }
 
     .btn-danger:hover {
-      background: rgba(239, 68, 68, 0.25);
-      border-color: rgba(239, 68, 68, 0.5);
-      box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
     }
 
     .btn-sm {
@@ -178,10 +195,10 @@
       font-size: 0.8rem;
     }
 
-    /* Main Workspace Grid */
+    /* Workspace Grid */
     .workspace-grid {
       display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
+      grid-template-columns: 1.150fr 0.850fr;
       gap: 1.5rem;
       flex: 1;
     }
@@ -201,21 +218,26 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .panel:hover {
+      border-color: rgba(139, 92, 246, 0.28);
     }
 
     .panel-header {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.15);
     }
 
     .panel-title {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 600;
       display: flex;
       align-items: center;
@@ -223,21 +245,20 @@
     }
 
     .panel-subtitle {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: var(--text-secondary);
     }
 
-    /* LEFT SIDE: AGENT CONSOLE */
+    /* LEFT COLUMN */
     .left-section {
       display: flex;
       flex-direction: column;
       gap: 1.25rem;
     }
 
-    /* Chat Area */
     .chat-panel {
-      height: 400px;
-      flex: 1.2;
+      height: 420px;
+      flex: 1.25;
     }
 
     .chat-messages {
@@ -259,7 +280,7 @@
     }
 
     .chat-bubble p {
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
     }
     .chat-bubble p:last-child {
       margin-bottom: 0;
@@ -267,31 +288,31 @@
 
     .bubble-user {
       align-self: flex-end;
-      background: rgba(139, 92, 246, 0.2);
-      border: 1px solid rgba(139, 92, 246, 0.4);
+      background: rgba(139, 92, 246, 0.18);
+      border: 1px solid rgba(139, 92, 246, 0.3);
       color: var(--text-primary);
       border-bottom-right-radius: 2px;
     }
 
     .bubble-agent {
       align-self: flex-start;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
       color: #e2defa;
       border-bottom-left-radius: 2px;
     }
 
     .chat-input-area {
       padding: 0.75rem 1.25rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      background: rgba(0, 0, 0, 0.15);
+      border-top: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(0, 0, 0, 0.12);
       display: flex;
       gap: 0.75rem;
     }
 
     .chat-input {
       flex: 1;
-      background: rgba(0, 0, 0, 0.3);
+      background: rgba(0, 0, 0, 0.25);
       border: 1px solid var(--border-color);
       border-radius: 8px;
       color: var(--text-primary);
@@ -304,15 +325,14 @@
 
     .chat-input:focus {
       border-color: var(--accent-purple);
-      box-shadow: 0 0 10px rgba(139, 92, 246, 0.2);
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.15);
     }
 
-    /* Background Daemon Terminal */
     .terminal-panel {
-      height: 250px;
-      flex: 0.8;
-      background: #04030a;
-      border: 1px solid rgba(139, 92, 246, 0.15);
+      height: 230px;
+      flex: 0.75;
+      background: #020106;
+      border: 1px solid rgba(139, 92, 246, 0.14);
     }
 
     .terminal-content {
@@ -334,7 +354,7 @@
     }
 
     .term-time {
-      color: #4b3d75;
+      color: #3b3061;
       flex-shrink: 0;
       user-select: none;
     }
@@ -348,14 +368,14 @@
     .msg-success { color: var(--accent-green); }
     .msg-error { color: var(--accent-red); font-weight: bold; }
 
-    /* RIGHT SIDE: SENTINEL CONTROLS */
+    /* RIGHT COLUMN */
     .right-section {
       display: flex;
       flex-direction: column;
       gap: 1.25rem;
     }
 
-    /* Sentinel Switches */
+    /* Switches */
     .sentinel-switches {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -363,8 +383,8 @@
     }
 
     .switch-card {
-      background: rgba(255, 255, 255, 0.02);
-      border: 1px solid rgba(139, 92, 246, 0.15);
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid rgba(139, 92, 246, 0.14);
       border-radius: 10px;
       padding: 1rem;
       display: flex;
@@ -374,8 +394,8 @@
     }
 
     .switch-card:hover {
-      background: rgba(255, 255, 255, 0.04);
-      border-color: rgba(139, 92, 246, 0.3);
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(139, 92, 246, 0.25);
     }
 
     .switch-label-area {
@@ -385,23 +405,23 @@
     }
 
     .switch-title {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
     .switch-desc {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: var(--text-secondary);
     }
 
-    /* Switch Slider styling */
+    /* Toggle Switches */
     .toggle-switch {
       position: relative;
       display: inline-block;
-      width: 44px;
-      height: 24px;
+      width: 42px;
+      height: 22px;
       flex-shrink: 0;
     }
 
@@ -418,17 +438,17 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: rgba(255, 255, 255, 0.06);
       transition: .3s;
       border-radius: 34px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.03);
     }
 
     .slider:before {
       position: absolute;
       content: "";
-      height: 16px;
-      width: 16px;
+      height: 14px;
+      width: 14px;
       left: 3px;
       bottom: 3px;
       background-color: var(--text-secondary);
@@ -437,35 +457,17 @@
     }
 
     input:checked + .slider {
-      background-color: rgba(139, 92, 246, 0.35);
+      background-color: rgba(139, 92, 246, 0.3);
       border-color: var(--accent-purple);
     }
 
     input:checked + .slider:before {
       transform: translateX(20px);
       background-color: #c084fc;
-      box-shadow: 0 0 8px rgba(168, 85, 247, 0.6);
+      box-shadow: 0 0 6px rgba(168, 85, 247, 0.5);
     }
 
-    .chip {
-      background: rgba(139, 92, 246, 0.08);
-      border: 1px solid rgba(139, 92, 246, 0.2);
-      border-radius: 12px;
-      color: var(--text-secondary);
-      padding: 0.25rem 0.65rem;
-      font-size: 0.75rem;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-    .chip:hover {
-      background: rgba(139, 92, 246, 0.2);
-      color: var(--text-primary);
-      border-color: rgba(139, 92, 246, 0.4);
-      transform: translateY(-1px);
-    }
-
-    /* Wallet and Staking Stats Grid */
+    /* Wallet details */
     .stats-card {
       padding: 1.25rem;
     }
@@ -478,8 +480,8 @@
     }
 
     .stat-box {
-      background: rgba(0, 0, 0, 0.25);
-      border: 1px solid rgba(255, 255, 255, 0.04);
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.03);
       border-radius: 8px;
       padding: 0.85rem;
       text-align: center;
@@ -498,7 +500,7 @@
     }
 
     .stat-label {
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       text-transform: uppercase;
       color: var(--text-secondary);
       margin-bottom: 0.25rem;
@@ -507,7 +509,7 @@
 
     .stat-value {
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 700;
     }
 
@@ -516,11 +518,10 @@
     .value-shield { color: #f87171; }
     .value-staked { color: #34d399; }
 
-    /* Staking subtext */
     .staking-summary {
       font-size: 0.8rem;
-      background: rgba(16, 185, 129, 0.03);
-      border: 1px dashed rgba(16, 185, 129, 0.2);
+      background: rgba(16, 185, 129, 0.02);
+      border: 1px dashed rgba(16, 185, 129, 0.15);
       border-radius: 8px;
       padding: 0.75rem 1rem;
       display: flex;
@@ -528,10 +529,10 @@
       align-items: center;
     }
 
-    /* Simulation area */
+    /* Sandbox */
     .simulation-area {
-      background: rgba(245, 158, 11, 0.02);
-      border: 1px dashed rgba(245, 158, 11, 0.2);
+      background: rgba(245, 158, 11, 0.01);
+      border: 1px dashed rgba(245, 158, 11, 0.15);
       border-radius: 8px;
       padding: 0.85rem 1.25rem;
       display: flex;
@@ -554,7 +555,7 @@
       flex: 1;
     }
 
-    /* Accordion Utilities */
+    /* Accordions */
     .accordion {
       display: flex;
       flex-direction: column;
@@ -562,7 +563,7 @@
     }
 
     .acc-item {
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.04);
       border-radius: 8px;
       background: rgba(0, 0, 0, 0.1);
       overflow: hidden;
@@ -571,12 +572,12 @@
     .acc-trigger {
       padding: 0.85rem 1.25rem;
       width: 100%;
-      background: rgba(255, 255, 255, 0.02);
+      background: rgba(255, 255, 255, 0.01);
       border: none;
       color: var(--text-primary);
       text-align: left;
       font-family: 'Space Grotesk', sans-serif;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
       display: flex;
@@ -586,30 +587,25 @@
     }
 
     .acc-trigger:hover {
-      background: rgba(255, 255, 255, 0.05);
-    }
-
-    .acc-trigger .icon {
-      font-size: 1.1rem;
-      transition: transform 0.2s ease;
+      background: rgba(255, 255, 255, 0.03);
     }
 
     .acc-content {
       padding: 1.25rem;
-      border-top: 1px solid rgba(255, 255, 255, 0.03);
+      border-top: 1px solid rgba(255, 255, 255, 0.02);
       display: none;
-      background: rgba(0, 0, 0, 0.15);
+      background: rgba(0, 0, 0, 0.12);
     }
 
     .acc-active .acc-content {
       display: block;
     }
 
-    .acc-active .acc-trigger .icon {
+    .acc-active .acc-trigger svg {
       transform: rotate(90deg);
     }
 
-    /* Diagnostic fields */
+    /* Diagnostic Results */
     .metric-row {
       display: flex;
       justify-content: space-between;
@@ -639,9 +635,9 @@
     }
 
     .gauge-fill-bar {
-      width: 150px;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.08);
+      width: 130px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.06);
       border-radius: 3px;
       overflow: hidden;
     }
@@ -662,9 +658,9 @@
       text-transform: uppercase;
     }
     
-    .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--accent-green); }
-    .badge-warning { background: rgba(245, 158, 11, 0.15); color: var(--accent-yellow); }
-    .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--accent-red); }
+    .badge-success { background: rgba(16, 185, 129, 0.12); color: var(--accent-green); }
+    .badge-warning { background: rgba(245, 158, 11, 0.12); color: var(--accent-yellow); }
+    .badge-danger { background: rgba(239, 68, 68, 0.12); color: var(--accent-red); }
 
     .input-group {
       display: flex;
@@ -674,7 +670,7 @@
 
     .input-box {
       flex: 1;
-      background: rgba(0, 0, 0, 0.25);
+      background: rgba(0, 0, 0, 0.2);
       border: 1px solid var(--border-color);
       border-radius: 6px;
       color: var(--text-primary);
@@ -690,9 +686,9 @@
 
     .diagnostic-results {
       padding: 0.75rem;
-      background: rgba(0,0,0,0.15);
+      background: rgba(0,0,0,0.12);
       border-radius: 6px;
-      border: 1px solid rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.02);
       font-size: 0.8rem;
     }
 
@@ -711,7 +707,7 @@
       text-align: center;
       margin-top: 2rem;
       padding-top: 1rem;
-      border-top: 1px solid rgba(255,255,255,0.05);
+      border-top: 1px solid rgba(255,255,255,0.04);
       color: var(--text-secondary);
       font-size: 0.8rem;
       display: flex;
@@ -729,13 +725,8 @@
     }
 
     /* Animations */
-    @keyframes pulse-glow {
-      0% { box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
-      100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.65); }
-    }
-
     @keyframes message-pop {
-      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      from { opacity: 0; transform: translateY(8px) scale(0.99); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
@@ -743,189 +734,52 @@
       from { opacity: 0; }
       to { opacity: 1; }
     }
-
-    /* Modal overlay and content */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(10, 8, 20, 0.85);
-      backdrop-filter: blur(8px);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: text-appear 0.25s ease;
-    }
-    .modal-content {
-      background: rgba(18, 14, 36, 0.95);
-      border: 1px solid var(--border-color);
-      border-radius: 16px;
-      width: 100%;
-      max-width: 440px;
-      padding: 1.75rem;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 92, 246, 0.15);
-      position: relative;
-    }
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.75rem;
-    }
-    .modal-header h3 {
-      font-family: 'Space Grotesk', sans-serif;
-      font-size: 1.25rem;
-      font-weight: 700;
-    }
-    .modal-close {
-      background: transparent;
-      border: none;
-      color: var(--text-secondary);
-      font-size: 1.75rem;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-    .modal-close:hover {
-      color: #fff;
-    }
-    .wallet-options {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-    .wallet-option {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      padding: 0.85rem 1.25rem;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.25s;
-      text-align: left;
-      width: 100%;
-      color: var(--text-primary);
-    }
-    .wallet-option:hover {
-      background: rgba(139, 92, 246, 0.1);
-      border-color: rgba(139, 92, 246, 0.3);
-      transform: translateY(-2px);
-    }
-    .wallet-option img {
-      width: 32px;
-      height: 32px;
-      object-fit: contain;
-    }
-    .pharos-logo-wallet {
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
-      border-radius: 50%;
-      font-size: 1.25rem;
-    }
-    .wallet-info {
-      display: flex;
-      flex-direction: column;
-    }
-    .wallet-name {
-      font-weight: 600;
-      font-size: 0.95rem;
-    }
-    .wallet-status {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
-
-    /* Ledger styles */
-    .ledger-panel {
-      display: flex;
-      flex-direction: column;
-    }
-    .ledger-table-wrapper {
-      overflow-x: auto;
-      margin-top: 0.75rem;
-      max-height: 220px;
-    }
-    .ledger-table {
-      width: 100%;
-      border-collapse: collapse;
-      text-align: left;
-      font-size: 0.8rem;
-    }
-    .ledger-table th, .ledger-table td {
-      padding: 0.6rem 0.75rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-    .ledger-table th {
-      color: var(--text-secondary);
-      font-weight: 600;
-      text-transform: uppercase;
-      font-size: 0.7rem;
-      letter-spacing: 0.5px;
-    }
-    .ledger-table tr:hover {
-      background: rgba(255, 255, 255, 0.02);
-    }
-    .ledger-table td a {
-      color: var(--accent-purple);
-      text-decoration: none;
-    }
-    .ledger-table td a:hover {
-      text-decoration: underline;
-    }
   </style>
 </head>
 <body>
+  <!-- Background Glows -->
+  <div class="glow-sphere glow-1"></div>
+  <div class="glow-sphere glow-2"></div>
+
   <div class="container">
     <header>
       <div class="logo-container">
-        <img src="/logo.png" alt="Pharos SPN Sentinel Logo" style="width: 38px; height: 38px; border-radius: 8px; box-shadow: 0 0 15px rgba(139, 92, 246, 0.4); border: 1px solid rgba(139, 92, 246, 0.2); margin-right: 0.5rem; object-fit: cover;">
+        <img src="/logo.png" alt="Pharos SPN Sentinel Logo" class="logo-img">
         <div>
           <h1>Pharos SPN Sentinel</h1>
           <p>Autonomous AI Staking & Threat Security Sentinel</p>
         </div>
       </div>
       <div class="header-links">
-        <a href="/api-docs" target="_blank" class="btn btn-secondary">📚 API Swagger Docs</a>
-        <button id="connect-wallet-btn" class="btn btn-primary" onclick="openWalletModal()">🔌 Login with Wallets</button>
-        <div id="wallet-connected-info" style="display: none; align-items: center; gap: 0.75rem;">
-          <span id="network-badge" class="badge badge-warning" style="cursor: pointer;" onclick="switchToPharosMainnet()">Switch to Pharos</span>
-          <span id="wallet-address" style="font-family: 'Fira Code', monospace; font-size: 0.85rem; color: var(--accent-purple); border: 1px solid var(--border-color); padding: 0.4rem 0.75rem; border-radius: 6px; background: rgba(0,0,0,0.2);">0x...</span>
-          <button class="btn btn-secondary btn-sm" onclick="disconnectWallet()">Disconnect</button>
-        </div>
+        <button id="btn-connect" class="btn btn-primary" onclick="connectWallet()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg>
+          Connect Wallet
+        </button>
+        <a href="/api-docs" target="_blank" class="btn btn-secondary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Swagger API
+        </a>
       </div>
     </header>
 
     <div class="workspace-grid">
-      <!-- LEFT COLUMN: CHAT CONSOLE AND DAEMON TERMINAL -->
+      <!-- LEFT COLUMN -->
       <div class="left-section">
         <!-- AI Agent Workspace -->
         <section class="panel chat-panel">
           <div class="panel-header">
-            <span class="panel-title">🤖 AI Agent Workspace</span>
-            <span class="panel-subtitle">Direct Chat with Guardian Sentinel</span>
+            <span class="panel-title">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2" ry="2"/><path d="M12 2v4M8 5h8M12 11V9M5 15v2M19 15v2"/></svg>
+              AI Agent Workspace
+            </span>
+            <span class="panel-subtitle">Direct Chat with Sentinel</span>
           </div>
           <div class="chat-messages" id="chat-messages">
             <div class="chat-bubble bubble-agent">
-              <p>Hello! I am your **Pharos Guardian Agent**.</p>
-              <p>I autonomously audit token smart contracts, optimize transaction gas fees (factoring in the Pharos EIP-1559 refund buffer), and monitor validator trust metrics to rebalance native restaking.</p>
-              <p>Type **"wallet status"** to inspect my active wallet counters or check the commands by asking **"help"**.</p>
+              <p>Hello! I am the **Pharos SPN Sentinel**.</p>
+              <p>I autonomously audit smart contracts, optimize transaction gas fees (with Pharos EIP-1559 refund buffers), and monitor L1 + Blockscout trust details to rebalance native restaking.</p>
+              <p>Type **"wallet status"** to inspect my current wallet counters or ask **"help"** for commands.</p>
             </div>
-          </div>
-          <div style="display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.5rem 1.25rem; border-top: 1px solid rgba(255, 255, 255, 0.03); background: rgba(0, 0, 0, 0.05); user-select: none;" class="chips-container">
-            <span class="chip" onclick="submitChip('wallet status')">💼 Status</span>
-            <span class="chip" onclick="submitChip('trending pools')">📈 CG Trends</span>
-            <span class="chip" onclick="submitChip('tvl uniswap')">🏦 Uniswap TVL</span>
-            <span class="chip" onclick="submitChip('elfa trending')">🐦 Social Mentions</span>
-            <span class="chip" onclick="submitChip('optimal gas')">⛽ Gas Optimizer</span>
-            <span class="chip" onclick="submitChip('audit 0xcfC8330f4BCAB529c625D12781b1C19466A9Fc8B')">🛡️ Audit Token</span>
           </div>
           <div class="chat-input-area">
             <input type="text" class="chat-input" id="chat-input" placeholder="Type command (e.g. 'wallet status', 'audit [address]')..." onkeydown="if(event.key === 'Enter') sendChatMessage()">
@@ -936,55 +790,26 @@
         <!-- Live Daemon Terminal -->
         <section class="panel terminal-panel">
           <div class="panel-header">
-            <span class="panel-title" style="color: var(--accent-purple);">📟 Background Daemon Logs</span>
+            <span class="panel-title" style="color: var(--accent-purple);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+              Background Daemon Logs
+            </span>
             <span class="panel-subtitle">Live Agent Logs</span>
           </div>
           <div class="terminal-content" id="terminal-content">
-            <!-- Dynamic lines -->
             <div class="terminal-line"><span class="term-time">[--:--:--]</span><span class="term-msg msg-info">Daemon listener booting...</span></div>
-          </div>
-        </section>
-
-        <!-- Live Transaction Ledger -->
-        <section class="panel ledger-panel" style="margin-top: 1.5rem;">
-          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-            <div>
-              <span class="panel-title" style="color: var(--accent-green);">📋 Broadcasted Transaction Ledger</span>
-              <span class="panel-subtitle">On-Chain Transactions & Wallet Operations</span>
-            </div>
-            <button class="btn btn-secondary btn-sm" onclick="clearLedger()" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">Clear</button>
-          </div>
-          <div class="ledger-table-wrapper">
-            <table class="ledger-table">
-              <thead>
-                <tr>
-                  <th>Time</th>
-                  <th>Action</th>
-                  <th>Description</th>
-                  <th>Tx Hash</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="ledger-body">
-                <tr>
-                  <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 1.5rem 0; font-size: 0.8rem;">
-                    No transactions recorded in this session.
-                  </td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </section>
       </div>
 
-      <!-- RIGHT COLUMN: SENTINEL CONTROLS AND DIAGNOSTICS -->
+      <!-- RIGHT COLUMN -->
       <div class="right-section">
         <!-- Sentinel Toggle Switches -->
         <div class="sentinel-switches">
           <div class="switch-card">
             <div class="switch-label-area">
               <span class="switch-title" style="color: var(--accent-yellow);">Auto-Defend</span>
-              <span class="switch-desc">Autonomous Threat Defense</span>
+              <span class="switch-desc">Threat Sweep</span>
             </div>
             <label class="toggle-switch">
               <input type="checkbox" id="toggle-defend" onchange="toggleAgentFeature('autoDefend', this.checked)" checked>
@@ -994,7 +819,7 @@
           <div class="switch-card">
             <div class="switch-label-area">
               <span class="switch-title" style="color: var(--accent-green);">Auto-Stake</span>
-              <span class="switch-desc">Yield Staking Optimizer</span>
+              <span class="switch-desc">Restaking APY</span>
             </div>
             <label class="toggle-switch">
               <input type="checkbox" id="toggle-stake" onchange="toggleAgentFeature('autoStake', this.checked)" checked>
@@ -1005,130 +830,56 @@
 
         <!-- Wallet and Staking Stats Panel -->
         <section class="panel stats-card">
-          <div class="panel-title" style="margin-bottom: 1rem;"><span class="icon">💼</span> Agent Wallet & Staking</div>
+          <div class="panel-title" style="margin-bottom: 1rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h14v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg>
+            &nbsp;Wallet & Staking Status
+          </div>
           <div class="stats-grid">
             <div class="stat-box">
               <div class="stat-label">Idle PROS</div>
-              <div class="stat-value value-pros" id="balance-pros">0.00</div>
+              <div class="stat-value value-pros" id="balance-pros">1250.00</div>
             </div>
             <div class="stat-box">
               <div class="stat-label">Staked PROS</div>
-              <div class="stat-value value-staked" id="balance-staked">0.00</div>
+              <div class="stat-value value-staked" id="balance-staked">5000.00</div>
             </div>
             <div class="stat-box">
               <div class="stat-label">USDC Balance</div>
-              <div class="stat-value value-usdc" id="balance-usdc">0.00</div>
+              <div class="stat-value value-usdc" id="balance-usdc">250.00</div>
             </div>
             <div class="stat-box">
               <div class="stat-label">SHIELD (Risky)</div>
               <div class="stat-value value-shield" id="balance-shield">0.00</div>
             </div>
           </div>
-
-          <!-- SVG Charts Container -->
-          <div style="display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 0.75rem; margin-bottom: 1.25rem;">
-            <!-- Asset Donut Chart -->
-            <div style="display: flex; gap: 0.6rem; align-items: center; padding: 0.6rem; background: rgba(0,0,0,0.15); border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); min-width: 0;">
-              <svg width="85" height="85" viewBox="0 0 120 120" id="asset-chart" style="flex-shrink: 0;">
-                <circle cx="60" cy="60" r="45" fill="transparent" stroke="rgba(255,255,255,0.05)" stroke-width="12"/>
-                <g id="donut-segments"></g>
-                <text x="60" y="64" text-anchor="middle" font-size="9" font-weight="700" fill="#fff" font-family="'Space Grotesk', sans-serif">PORTFOLIO</text>
-              </svg>
-              <div style="font-size: 0.62rem; display: flex; flex-direction: column; gap: 0.2rem; flex: 1; min-width: 0;" id="chart-legend">
-                <!-- Legend items injected dynamically -->
-              </div>
-            </div>
-
-            <!-- APY Timeline Line Chart -->
-            <div style="display: flex; flex-direction: column; justify-content: center; padding: 0.6rem; background: rgba(0,0,0,0.15); border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); min-width: 0;">
-              <div style="color: var(--text-secondary); font-size: 0.65rem; text-transform: uppercase; font-weight: 600; margin-bottom: 0.4rem; letter-spacing: 0.3px; white-space: nowrap;">
-                📈 Yield APR Timeline
-              </div>
-              <svg width="100%" height="48" viewBox="0 0 200 48" style="overflow: visible;">
-                <defs>
-                  <linearGradient id="chart-grad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="var(--accent-green)" stop-opacity="0.25"/>
-                    <stop offset="100%" stop-color="var(--accent-green)" stop-opacity="0"/>
-                  </linearGradient>
-                </defs>
-                <path d="M 0 46 L 30 38 L 60 41 L 90 28 L 120 24 L 150 15 L 200 10 L 200 46 Z" fill="url(#chart-grad)"/>
-                <path d="M 0 46 L 30 38 L 60 41 L 90 28 L 120 24 L 150 15 L 200 10" fill="none" stroke="var(--accent-green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <circle cx="0" cy="46" r="2.5" fill="var(--bg-dark)" stroke="var(--accent-green)" stroke-width="1.5"/>
-                <circle cx="60" cy="41" r="2.5" fill="var(--bg-dark)" stroke="var(--accent-green)" stroke-width="1.5"/>
-                <circle cx="120" cy="24" r="2.5" fill="var(--bg-dark)" stroke="var(--accent-green)" stroke-width="1.5"/>
-                <circle cx="200" cy="10" r="2.5" fill="var(--bg-dark)" stroke="var(--accent-green)" stroke-width="1.5"/>
-                <text x="200" y="5" text-anchor="end" font-size="7" fill="var(--accent-green)" font-weight="700">Active APY: 5.8%</text>
-              </svg>
-            </div>
-          </div>
-
           <div class="staking-summary">
             <div>
-              <span style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase;">Active Yield Node</span>
-              <div style="font-weight: 600; font-size: 0.85rem;" id="staking-validator">Not Configured</div>
+              <span style="color: var(--text-secondary); font-size: 0.72rem; text-transform: uppercase;">Active Yield Node</span>
+              <div style="font-weight: 600; font-size: 0.85rem;" id="staking-validator">0x51b11...f015</div>
             </div>
             <div style="text-align: right;">
               <span class="badge badge-success">5.8% APY</span>
-              <div style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.2rem;">Low Risk Profile</div>
+              <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.2rem;">Low Risk Node</div>
             </div>
-          </div>
-        </section>
-
-        <!-- Pharos Network Integration Panel -->
-        <section class="panel network-panel">
-          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 0.25rem;">
-            <div>
-              <span class="panel-title" style="color: var(--accent-blue);"><span class="icon">🔗</span> Pharos Network Details</span>
-              <span class="panel-subtitle">Chain Parameters & Integration</span>
-            </div>
-            <button class="btn btn-secondary btn-sm" onclick="switchToPharosMainnet()" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Add Network</button>
-          </div>
-          <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.75rem; margin-top: 0.25rem;">
-            Configure your web3 wallet to interact with the Pharos Special Processing Networks (SPNs).
-          </div>
-          <div class="network-details-grid" style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 0.4rem; font-size: 0.75rem; background: rgba(0,0,0,0.15); padding: 0.6rem; border-radius: 6px; border: 1px solid rgba(255,255,255,0.03);">
-            <div style="color: var(--text-secondary);">Network Name:</div>
-            <div style="font-weight: 600;">Pharos Mainnet</div>
-            <div style="color: var(--text-secondary);">RPC URL:</div>
-            <div style="font-family: monospace; font-size: 0.7rem; color: var(--accent-purple);">https://rpc.pharos.xyz</div>
-            <div style="color: var(--text-secondary);">Chain ID:</div>
-            <div style="font-weight: 600;">1672 (0x688)</div>
-            <div style="color: var(--text-secondary);">Currency Symbol:</div>
-            <div style="font-weight: 600;">PROS</div>
-            <div style="color: var(--text-secondary);">Block Explorer:</div>
-            <div><a href="https://scan.pharos.xyz" target="_blank" style="color: var(--accent-purple); text-decoration: none;">scan.pharos.xyz ↗</a></div>
           </div>
         </section>
 
         <!-- Simulation Control Panel -->
         <section class="panel simulation-area">
           <div class="sim-header">
-            <span class="panel-title" style="font-size: 0.95rem; color: var(--accent-yellow);"><span class="icon">⚡</span> Simulation Sandbox</span>
-            <span style="font-size: 0.75rem; color: var(--text-secondary);">Test Autonomous Loops</span>
+            <span class="panel-title" style="font-size: 0.95rem; color: var(--accent-yellow);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Simulation Sandbox
+            </span>
+            <span style="font-size: 0.75rem; color: var(--text-secondary);">Simulate Loops</span>
           </div>
           <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">
-            Inject simulation blocks into the agent loops to test threat mitigation and yield auto-staking.
+            Manually trigger autonomous actions in the agent's daemon checking system.
           </div>
           <div class="sim-buttons">
-            <button class="btn btn-danger btn-sm" onclick="triggerSimulation('threat')">☣️ Simulate Threat Attack</button>
-            <button class="btn btn-secondary btn-sm" onclick="triggerSimulation('yield')">💸 Trigger Stake Check</button>
+            <button class="btn btn-danger btn-sm" onclick="triggerSimulation('threat')">Simulate Threat Attack (+500 SHIELD)</button>
+            <button class="btn btn-secondary btn-sm" onclick="triggerSimulation('yield')">Force Rebalance Check</button>
           </div>
-        </section>
-
-        <!-- Tip Dev Panel -->
-        <section class="panel tip-panel">
-          <div class="panel-header">
-            <span class="panel-title" style="color: var(--accent-purple);"><span class="icon">🎁</span> Support the Sentinel</span>
-            <span class="panel-subtitle">Tip Developer</span>
-          </div>
-          <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.75rem; margin-top: 0.25rem;">
-            Send native `PROS` to support the development and hosting of Pharos SPN Sentinel.
-          </div>
-          <div class="input-group">
-            <input type="number" class="input-box" id="tip-amount" placeholder="Amount (PROS)" value="10.0" step="1.0" min="0.1" style="width: 55%;">
-            <button class="btn btn-primary btn-sm" onclick="sendTip()" style="width: 40%;">Tip dev</button>
-          </div>
-          <div id="tip-status" style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem; display: none; line-height: 1.4;"></div>
         </section>
 
         <!-- Accordion Utility Tools -->
@@ -1136,8 +887,11 @@
           <!-- contract auditor -->
           <div class="acc-item" id="acc-audit">
             <button class="acc-trigger" onclick="toggleAccordion('acc-audit')">
-              <span>🛡️ Smart Contract Bytecode Auditor</span>
-              <span class="icon">▶</span>
+              <span style="display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Smart Contract Bytecode Auditor
+              </span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
             <div class="acc-content">
               <div class="input-group">
@@ -1145,18 +899,7 @@
                 <button class="btn btn-primary btn-sm" onclick="runManualAudit()">Audit</button>
               </div>
               <div class="diagnostic-results" id="manual-audit-results" style="display: none;">
-                <div class="gauge-container">
-                  <span style="font-weight: 600;">Safety Score:</span>
-                  <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <div class="gauge-fill-bar"><div class="gauge-fill-val" id="manual-audit-fill"></div></div>
-                    <span id="manual-audit-score">100%</span>
-                  </div>
-                </div>
-                <div class="metric-row">
-                  <span class="metric-label">Assessment</span>
-                  <span id="manual-audit-badge">SAFE</span>
-                </div>
-                <div style="margin-top: 0.5rem;" id="manual-audit-factors"></div>
+                <!-- dynamic -->
               </div>
             </div>
           </div>
@@ -1164,17 +907,16 @@
           <!-- gas optimizer -->
           <div class="acc-item" id="acc-gas">
             <button class="acc-trigger" onclick="toggleAccordion('acc-gas')">
-              <span>⛽ Gas Price & Refund Optimizer</span>
-              <span class="icon">▶</span>
+              <span style="display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V2a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v20"/><path d="M17 12h4v8a2 2 0 0 1-2 2h-2"/><circle cx="10" cy="8" r="3"/><line x1="6" y1="16" x2="14" y2="16"/></svg>
+                Gas Price & Refund Optimizer
+              </span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
             <div class="acc-content">
               <button class="btn btn-secondary btn-sm" style="width: 100%; margin-bottom: 0.75rem;" onclick="runManualGas()">Fetch Gas Parameters</button>
               <div class="diagnostic-results" id="manual-gas-results" style="display: none;">
-                <div class="metric-row"><span class="metric-label">Base Fee</span><span class="metric-value" id="manual-gas-base">--</span></div>
-                <div class="metric-row"><span class="metric-label">Priority Fee</span><span class="metric-value" id="manual-gas-priority">--</span></div>
-                <div class="metric-row"><span class="metric-label">Max Fee (Buffer)</span><span class="metric-value" id="manual-gas-max" style="color: var(--accent-purple);">--</span></div>
-                <div class="metric-row"><span class="metric-label">Congestion Level</span><span class="metric-value" id="manual-gas-congestion">--</span></div>
-                <div class="metric-row"><span class="metric-label">Optimal Action Window</span><span class="metric-value" id="manual-gas-window">--</span></div>
+                <!-- dynamic -->
               </div>
             </div>
           </div>
@@ -1182,8 +924,11 @@
           <!-- validator trust -->
           <div class="acc-item" id="acc-trust">
             <button class="acc-trigger" onclick="toggleAccordion('acc-trust')">
-              <span>🔍 Blockscout Validator Trust Assessor</span>
-              <span class="icon">▶</span>
+              <span style="display: flex; align-items: center; gap: 0.5rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                Blockscout Validator Trust Assessor
+              </span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
             <div class="acc-content">
               <div class="input-group">
@@ -1191,33 +936,8 @@
                 <button class="btn btn-primary btn-sm" onclick="runManualTrust()">Assess</button>
               </div>
               <div class="diagnostic-results" id="manual-trust-results" style="display: none;">
-                <div class="metric-row"><span class="metric-label">Decentralization Score</span><span class="metric-value" id="manual-trust-l1-decent">--</span></div>
-                <div class="metric-row"><span class="metric-label">Nakamoto Coefficient</span><span class="metric-value" id="manual-trust-l1-nak">--</span></div>
-                <div class="metric-row"><span class="metric-label">ETH Balance (Ethereum)</span><span class="metric-value" id="manual-trust-eth-bal">--</span></div>
-                <div class="metric-row"><span class="metric-label">Normal Txs (Ethereum)</span><span class="metric-value" id="manual-trust-eth-tx">--</span></div>
-                <div class="metric-row"><span class="metric-label">Reputation Score</span><span class="metric-value" id="manual-trust-score">--</span></div>
-                <div class="metric-row"><span class="metric-label">Concentration Risk</span><span class="metric-value" id="manual-trust-risk">--</span></div>
-                <div style="margin-top: 0.5rem;" id="manual-trust-factors"></div>
+                <!-- dynamic -->
               </div>
-            </div>
-          </div>
-
-          <!-- validator staking delegator -->
-          <div class="acc-item" id="acc-staking-delegate">
-            <button class="acc-trigger" onclick="toggleAccordion('acc-staking-delegate')">
-              <span>🔗 On-Chain Validator Staking Delegator</span>
-              <span class="icon">▶</span>
-            </button>
-            <div class="acc-content">
-              <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.75rem;">
-                Composed transaction tool: Performs smart validator delegation transactions using your connected Web3 wallet.
-              </div>
-              <div class="input-group" style="flex-direction: column; gap: 0.5rem; margin-bottom: 0.75rem;">
-                <input type="text" class="input-box" id="delegate-validator-addr" placeholder="Validator Address (0x...)" value="0x51b111109964d9eb43da7a7dc6d0917d551fb015" style="width: 100%;">
-                <input type="number" class="input-box" id="delegate-amount" placeholder="Amount (PROS)" value="100" step="10" min="1" style="width: 100%;">
-              </div>
-              <button class="btn btn-primary btn-sm" style="width: 100%;" onclick="runManualStakingDelegate()">💸 Delegate Staking (On-Chain)</button>
-              <div id="manual-delegate-status" style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem; display: none; line-height: 1.4;"></div>
             </div>
           </div>
         </div>
@@ -1226,159 +946,127 @@
 
     <footer class="footer">
       <div>Pharos SPN Sentinel • Composable AI-Agent Safety Skill Suite</div>
-      <div>DoraHacks Hackathon Edition 🛡️</div>
+      <div>Running locally on <a href="http://localhost:3000">localhost:3000</a></div>
     </footer>
   </div>
 
-  <!-- Wallet Connection Modal -->
-  <div id="wallet-modal" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3>Connect Wallet</h3>
-        <button class="modal-close" onclick="closeWalletModal()">&times;</button>
-      </div>
-      <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.4;">
-        Select your wallet from the options below to connect to Pharos SPN Sentinel.
-      </p>
-      <div class="wallet-options">
-        <button class="wallet-option" onclick="connectWalletProvider('metamask')">
-          <img src="https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg" alt="MetaMask">
-          <div class="wallet-info">
-            <span class="wallet-name">MetaMask</span>
-            <span class="wallet-status">Popular Web3 Extension</span>
-          </div>
-        </button>
-        <button class="wallet-option" onclick="connectWalletProvider('pharos')">
-          <div class="pharos-logo-wallet">🌀</div>
-          <div class="wallet-info">
-            <span class="wallet-name">Pharos Wallet</span>
-            <span class="wallet-status">Native L1 Wallet</span>
-          </div>
-        </button>
-        <button class="wallet-option" onclick="connectWalletProvider('walletconnect')">
-          <img src="https://raw.githubusercontent.com/WalletConnect/walletconnect-assets/master/svg/original/walletconnect-logo-blue.svg" alt="WalletConnect">
-          <div class="wallet-info">
-            <span class="wallet-name">WalletConnect</span>
-            <span class="wallet-status">Mobile QR Code Connect</span>
-          </div>
-        </button>
-        <button class="wallet-option" onclick="connectWalletProvider('coinbase')">
-          <img src="https://raw.githubusercontent.com/coinbase/coinbase-wallet-sdk/master/packages/wallet-sdk/assets/coinbase-logo.svg" alt="Coinbase Wallet" style="border-radius: 50%;">
-          <div class="wallet-info">
-            <span class="wallet-name">Coinbase Wallet</span>
-            <span class="wallet-status">Ecosystem Bridge</span>
-          </div>
-        </button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    let logCount = 0;
-    let knownLogTimestamps = new Set();
-
-    // Web3 Wallet connection states
     let userAddress = null;
-    let isWalletConnected = false;
-    let currentChainId = null;
-    let localUserTransactions = [];
-
-    // Web3 event listeners
-    if (typeof window.ethereum !== 'undefined') {
-      window.ethereum.on('accountsChanged', (accounts) => {
-        if (accounts.length === 0) {
-          disconnectWallet();
-        } else {
-          userAddress = accounts[0];
-          isWalletConnected = true;
-          updateWalletUI();
-        }
-      });
-
-      window.ethereum.on('chainChanged', (chainIdHex) => {
-        currentChainId = parseInt(chainIdHex, 16);
-        updateWalletUI();
-      });
-    }
 
     document.addEventListener("DOMContentLoaded", () => {
       fetchAgentStatus();
       setInterval(fetchAgentStatus, 3000); // Poll agent status/logs every 3 seconds
     });
 
-    function submitChip(cmd) {
-      const input = document.getElementById('chat-input');
-      if (!input) return;
-      input.value = cmd;
-      sendChatMessage();
-    }
-
-    function updateAssetChart(pros, staked, usdc, shield) {
-      const total = pros + staked + usdc + shield;
-      const segments = document.getElementById('donut-segments');
-      const legend = document.getElementById('chart-legend');
-      if (!segments || !legend) return;
-      
-      segments.innerHTML = '';
-      legend.innerHTML = '';
-      
-      if (total <= 0) {
-        segments.innerHTML = '<circle cx="60" cy="60" r="45" fill="transparent" stroke="rgba(255,255,255,0.05)" stroke-width="12"/>';
-        legend.innerHTML = '<div style="color:var(--text-secondary); text-align:center; width:100%; padding:0.5rem 0;">Empty Portfolio</div>';
+    // MetaMask Web3 Integration
+    async function connectWallet() {
+      if (typeof window.ethereum === 'undefined') {
+        alert('MetaMask or another EVM wallet was not detected. Please install a wallet (like MetaMask) to connect!');
         return;
       }
       
-      const assets = [
-        { label: 'Idle PROS', amount: pros, color: '#d8b4fe' },
-        { label: 'Staked PROS', amount: staked, color: '#34d399' },
-        { label: 'USDC', amount: usdc, color: '#60a5fa' },
-        { label: 'SHIELD', amount: shield, color: '#f87171' }
-      ];
-      
-      const circumference = 282.74;
-      let currentOffset = 0;
-      
-      assets.forEach(asset => {
-        if (asset.amount <= 0) return;
-        const pct = asset.amount / total;
-        const strokeLength = pct * circumference;
-        const strokeOffset = circumference - strokeLength + currentOffset;
+      const btn = document.getElementById('btn-connect');
+      btn.innerText = 'Connecting...';
+      btn.disabled = true;
+
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        userAddress = accounts[0];
         
-        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-        circle.setAttribute('cx', '60');
-        circle.setAttribute('cy', '60');
-        circle.setAttribute('r', '45');
-        circle.setAttribute('fill', 'transparent');
-        circle.setAttribute('stroke', asset.color);
-        circle.setAttribute('stroke-width', '12');
-        circle.setAttribute('stroke-dasharray', `${circumference}`);
-        circle.setAttribute('stroke-dashoffset', `${strokeOffset}`);
-        circle.setAttribute('transform', 'rotate(-90 60 60)');
-        circle.style.transition = 'stroke-dashoffset 0.5s ease-in-out';
-        segments.appendChild(circle);
-        
-        currentOffset -= strokeLength;
-        
-        const pctText = (pct * 100).toFixed(0);
-        const legendItem = document.createElement('div');
-        legendItem.style.display = 'flex';
-        legendItem.style.alignItems = 'center';
-        legendItem.style.gap = '0.3rem';
-        legendItem.style.width = '100%';
-        legendItem.innerHTML = `
-          <span style="display:inline-block; width:6px; height:6px; border-radius:50%; background:${asset.color}; flex-shrink:0;"></span>
-          <span style="color:var(--text-secondary); text-overflow:ellipsis; overflow:hidden; white-space:nowrap; max-width:65px;">${asset.label}</span>
-          <span style="font-weight:600; margin-left:auto; white-space:nowrap;">${pctText}%</span>
-        `;
-        legend.appendChild(legendItem);
-      });
+        // Truncate address for display
+        const truncated = userAddress.substring(0, 6) + '...' + userAddress.substring(38);
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg> ${truncated}`;
+        btn.className = 'btn btn-secondary';
+        btn.disabled = false;
+
+        // Switch to Pharos Mainnet (Chain ID 1672 = hex 0x688)
+        await switchNetwork();
+
+        // Get actual native PROS balance
+        await updateWalletBalance();
+
+        window.ethereum.on('accountsChanged', (accounts) => {
+          if (accounts.length === 0) {
+            disconnectWallet();
+          } else {
+            userAddress = accounts[0];
+            const truncated = userAddress.substring(0, 6) + '...' + userAddress.substring(38);
+            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg> ${truncated}`;
+            updateWalletBalance();
+          }
+        });
+
+        window.ethereum.on('chainChanged', () => {
+          window.location.reload();
+        });
+
+      } catch (err) {
+        console.error('Wallet connection failed:', err);
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg> Connect Wallet`;
+        btn.className = 'btn btn-primary';
+        btn.disabled = false;
+      }
+    }
+
+    function disconnectWallet() {
+      userAddress = null;
+      const btn = document.getElementById('btn-connect');
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg> Connect Wallet`;
+      btn.className = 'btn btn-primary';
+      fetchAgentStatus();
+    }
+
+    async function switchNetwork() {
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x688' }], // Chain ID 1672
+        });
+      } catch (switchError) {
+        if (switchError.code === 4902) {
+          try {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  chainId: '0x688',
+                  chainName: 'Pharos Mainnet',
+                  rpcUrls: ['https://rpc.pharos.xyz'],
+                  nativeCurrency: {
+                    name: 'PROS',
+                    symbol: 'PROS',
+                    decimals: 18,
+                  },
+                  blockExplorerUrls: ['https://www.pharosscan.xyz'],
+                },
+              ],
+            });
+          } catch (addError) {
+            console.error('Error adding Pharos Network:', addError);
+          }
+        }
+      }
+    }
+
+    async function updateWalletBalance() {
+      if (!userAddress) return;
+      try {
+        const balanceHex = await window.ethereum.request({
+          method: 'eth_getBalance',
+          params: [userAddress, 'latest']
+        });
+        const balanceWei = BigInt(balanceHex);
+        const balancePros = Number(balanceWei) / 1e18;
+        document.getElementById('balance-pros').innerText = balancePros.toFixed(2);
+      } catch (err) {
+        console.error('Failed to fetch balance:', err);
+      }
     }
 
     function toggleAccordion(id) {
       const item = document.getElementById(id);
       const active = item.classList.contains('acc-active');
       
-      // Close all
       document.querySelectorAll('.acc-item').forEach(i => i.classList.remove('acc-active'));
       
       if (!active) {
@@ -1398,27 +1086,24 @@
         document.getElementById('toggle-stake').checked = data.autoStake;
 
         // Update balances
-        document.getElementById('balance-pros').innerText = data.wallet.prosBalance.toFixed(2);
+        if (!userAddress) {
+          document.getElementById('balance-pros').innerText = data.wallet.prosBalance.toFixed(2);
+        } else {
+          updateWalletBalance(); // use real balance if connected
+        }
         document.getElementById('balance-staked').innerText = data.wallet.stakedPros.toFixed(2);
         document.getElementById('balance-usdc').innerText = data.wallet.usdcBalance.toFixed(2);
         document.getElementById('balance-shield').innerText = data.wallet.shieldBalance.toFixed(2);
         
-        // Update SVG Donut chart
-        updateAssetChart(data.wallet.prosBalance, data.wallet.stakedPros, data.wallet.usdcBalance, data.wallet.shieldBalance);
-        
         // Staking details
-        const validator = data.wallet.delegatedValidator;
         document.getElementById('staking-validator').innerText = 
-          (validator === '0x0000000000000000000000000000000000000000' || validator === 'None') 
-          ? 'Not Configured' 
-          : validator.substring(0, 7) + '...' + validator.substring(37);
+          data.wallet.delegatedValidator.substring(0, 7) + '...' + data.wallet.delegatedValidator.substring(37);
 
         // Update Terminal Logs
         const terminal = document.getElementById('terminal-content');
         terminal.innerHTML = '';
         
         if (data.logs && data.logs.length > 0) {
-          // Reverse to display chronological order in terminal
           const sortedLogs = [...data.logs].reverse();
           sortedLogs.forEach(log => {
             const timeStr = new Date(log.timestamp).toLocaleTimeString();
@@ -1430,58 +1115,6 @@
           terminal.scrollTop = terminal.scrollHeight;
         } else {
           terminal.innerHTML = '<div class="terminal-line"><span class="term-time">[--:--:--]</span><span class="term-msg msg-info">No logs recorded.</span></div>';
-        }
-
-        // Update Broadcasted Transaction Ledger
-        let allTxs = [];
-        if (data.transactions) {
-          allTxs = [...data.transactions];
-        }
-        // Merge in local wallet transactions
-        allTxs = [...localUserTransactions, ...allTxs];
-        // Sort descending by timestamp
-        allTxs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-        const ledgerBody = document.getElementById('ledger-body');
-        if (allTxs.length > 0) {
-          ledgerBody.innerHTML = '';
-          allTxs.forEach(tx => {
-            const timeStr = new Date(tx.timestamp).toLocaleTimeString();
-            const badgeClass = (tx.status === 'SUCCESS' || tx.status === 'Success') ? 'badge-success' : 
-                               tx.status === 'PENDING' ? 'badge-warning' : 'badge-danger';
-            
-            // Format description
-            let desc = '';
-            if (tx.type === 'SWAP') desc = `Swapped ${tx.amount} ${tx.token} to USDC (Threat Avoidance)`;
-            else if (tx.type === 'STAKE') desc = `Delegated restake: ${tx.amount} ${tx.token}`;
-            else if (tx.type === 'UNSTAKE') desc = `Unstaked from validator: ${tx.amount} ${tx.token}`;
-            else if (tx.type === 'INCOMING_TOKEN') desc = `Received risky token: +${tx.amount} ${tx.token}`;
-            else if (tx.type === 'DEPOSIT') desc = `Deposited native collateral: ${tx.amount} ${tx.token}`;
-            else if (tx.type === 'TIP_DEV') desc = `Sent ${tx.amount} ${tx.token} tip to developer`;
-            else if (tx.type === 'WALLET_LOGIN') desc = `Wallet connected: ${tx.amount}`;
-            else if (tx.type === 'NETWORK_SWITCH') desc = `Switched chain network to ${tx.amount}`;
-            else desc = tx.description || `${tx.type} operation`;
-
-            const row = document.createElement('tr');
-            row.innerHTML = `
-              <td>${timeStr}</td>
-              <td style="font-weight:600; font-size:0.75rem;">${tx.type}</td>
-              <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${desc}</td>
-              <td>
-                ${(tx.hash && tx.hash !== 'N/A') ? `<a href="https://scan.pharos.xyz/tx/${tx.hash}" target="_blank" style="font-family:'Fira Code', monospace; font-size:0.75rem;">${tx.hash.substring(0, 10)}...</a>` : '<span style="color:var(--text-secondary);">N/A</span>'}
-              </td>
-              <td><span class="badge ${badgeClass}">${tx.status}</span></td>
-            `;
-            ledgerBody.appendChild(row);
-          });
-        } else {
-          ledgerBody.innerHTML = `
-            <tr>
-              <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 1.5rem 0; font-size: 0.8rem;">
-                No transactions recorded in this session.
-              </td>
-            </tr>
-          `;
         }
       } catch (err) {
         console.error('Error fetching agent status:', err);
@@ -1511,11 +1144,10 @@
         });
         if (!response.ok) throw new Error('Simulation trigger failed');
         
-        // Display user notifications
         const chatMessages = document.getElementById('chat-messages');
         const alertBubble = document.createElement('div');
         alertBubble.className = 'chat-bubble bubble-user';
-        alertBubble.innerHTML = `<p>⚠️ *Triggered simulated ${type} event.*</p>`;
+        alertBubble.innerHTML = `<p>⚡ *Triggered simulated ${type} event.*</p>`;
         chatMessages.appendChild(alertBubble);
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -1534,14 +1166,12 @@
       
       const chatMessages = document.getElementById('chat-messages');
       
-      // Append user bubble
       const userBubble = document.createElement('div');
       userBubble.className = 'chat-bubble bubble-user';
       userBubble.innerHTML = `<p>${escapeHtml(message)}</p>`;
       chatMessages.appendChild(userBubble);
       chatMessages.scrollTop = chatMessages.scrollHeight;
 
-      // Append typing indicator
       const typingBubble = document.createElement('div');
       typingBubble.className = 'chat-bubble bubble-agent';
       typingBubble.id = 'agent-typing';
@@ -1556,21 +1186,18 @@
           body: JSON.stringify({ message })
         });
         
-        // Remove typing
         const typing = document.getElementById('agent-typing');
         if (typing) typing.remove();
 
         if (!response.ok) throw new Error('Chat failed');
         const data = await response.json();
         
-        // Append agent response bubble
         const agentBubble = document.createElement('div');
         agentBubble.className = 'chat-bubble bubble-agent';
         agentBubble.innerHTML = formatMarkdown(data.reply);
         chatMessages.appendChild(agentBubble);
         chatMessages.scrollTop = chatMessages.scrollHeight;
 
-        // Update state
         fetchAgentStatus();
       } catch (err) {
         const typing = document.getElementById('agent-typing');
@@ -1584,7 +1211,6 @@
       }
     }
 
-    // Diagnostics Manual Operations
     async function runManualAudit() {
       const address = document.getElementById('manual-audit-addr').value.trim();
       if (!address) return;
@@ -1644,65 +1270,12 @@
         let badgeClass = data.networkCongestion === 'LOW' ? 'badge-success' : 
                          data.networkCongestion === 'MEDIUM' ? 'badge-warning' : 'badge-danger';
 
-        const maxFeeGwei = parseFloat(data.maxFeePerGas) || 0.15;
-        const pharosRefundedFee = maxFeeGwei * 0.7; // Simulate 30% savings
-
         resultsDiv.innerHTML = `
           <div class="metric-row"><span class="metric-label">Base Fee</span><span class="metric-value">${data.currentBaseFee}</span></div>
           <div class="metric-row"><span class="metric-label">Priority Fee</span><span class="metric-value">${data.priorityFee}</span></div>
           <div class="metric-row"><span class="metric-label">Max Fee (Buffer)</span><span class="metric-value" style="color: var(--accent-purple);">${data.maxFeePerGas}</span></div>
           <div class="metric-row"><span class="metric-label">Congestion Level</span><span class="metric-value"><span class="badge ${badgeClass}">${data.networkCongestion}</span></span></div>
           <div class="metric-row"><span class="metric-label">Optimal Action Window</span><span class="metric-value">${data.optimalTimeWindow}</span></div>
-          
-          <div style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.75rem;">
-            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 500;">
-              ⛽ Pharos EIP-1559 Gas Savings vs. Standard EVM
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-              <div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.2rem;">
-                  <span>Standard EVM (with 20% safety buffer)</span>
-                  <span>${maxFeeGwei.toFixed(4)} Gwei</span>
-                </div>
-                <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden;">
-                  <div style="height: 100%; width: 100%; background: var(--accent-red);"></div>
-                </div>
-              </div>
-              <div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.2rem;">
-                  <span>Pharos L1 (Net fee after EIP-1559 Refund)</span>
-                  <span style="color: var(--accent-green); font-weight: 600;">${pharosRefundedFee.toFixed(4)} Gwei</span>
-                </div>
-                <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden;">
-                  <div style="height: 100%; width: 70%; background: var(--accent-green);"></div>
-                </div>
-              </div>
-              <div style="font-size: 0.7rem; color: var(--accent-purple); text-align: center; margin-top: 0.25rem; font-weight: 600; margin-bottom: 0.75rem;">
-                🔥 30.0% gas cost saved via automated Pharos L1 EIP-1559 Refund buffer!
-              </div>
-            </div>
-            
-            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 500; border-top: 1px dashed rgba(255,255,255,0.05); padding-top: 0.5rem;">
-              📊 EVM Cross-Chain Gas Comparison ($ / Swap Tx)
-            </div>
-            <svg width="100%" height="80" viewBox="0 0 280 80" style="overflow: visible;">
-              <text x="0" y="12" font-size="7" fill="var(--text-secondary)">Ethereum L1</text>
-              <rect x="70" y="5" width="180" height="8" rx="2" fill="var(--accent-red)"/>
-              <text x="255" y="12" font-size="7" fill="var(--accent-red)" font-weight="700">$12.50</text>
-
-              <text x="0" y="32" font-size="7" fill="var(--text-secondary)">Optimism L2</text>
-              <rect x="70" y="25" width="20" height="8" rx="2" fill="var(--accent-yellow)"/>
-              <text x="95" y="32" font-size="7" fill="var(--accent-yellow)" font-weight="700">$0.08</text>
-
-              <text x="0" y="52" font-size="7" fill="var(--text-secondary)">Base L2</text>
-              <rect x="70" y="45" width="10" height="8" rx="2" fill="var(--accent-blue)"/>
-              <text x="85" y="52" font-size="7" fill="var(--accent-blue)" font-weight="700">$0.04</text>
-
-              <text x="0" y="72" font-size="7" fill="var(--text-primary)" font-weight="700">Pharos SPN</text>
-              <rect x="70" y="65" width="3" height="8" rx="2" fill="var(--accent-green)"/>
-              <text x="78" y="72" font-size="7" fill="var(--accent-green)" font-weight="700">$0.005</text>
-            </svg>
-          </div>
         `;
       } catch (err) {
         resultsDiv.innerHTML = `<p style="color: var(--accent-red);">Gas fetch failed: ${err.message}</p>`;
@@ -1745,65 +1318,8 @@
       } catch (err) {
         resultsDiv.innerHTML = `<p style="color: var(--accent-red);">Trust check failed: ${err.message}</p>`;
       }
-    async function runManualStakingDelegate() {
-      const validator = document.getElementById('delegate-validator-addr').value.trim();
-      const amountInput = document.getElementById('delegate-amount');
-      const amount = parseFloat(amountInput.value);
-      const statusDiv = document.getElementById('manual-delegate-status');
-
-      if (!validator) {
-        alert('Please enter a validator address.');
-        return;
-      }
-      if (isNaN(amount) || amount <= 0) {
-        alert('Please enter a valid delegation amount.');
-        return;
-      }
-      if (!isWalletConnected) {
-        alert('Please connect your wallet first.');
-        openWalletModal();
-        return;
-      }
-
-      statusDiv.style.display = 'block';
-      statusDiv.style.color = 'var(--text-secondary)';
-      statusDiv.innerText = 'Initializing delegation transaction...';
-
-      if (currentChainId !== 1672 && typeof window.ethereum !== 'undefined') {
-        statusDiv.innerText = 'Switching to Pharos Mainnet...';
-        await switchToPharosMainnet();
-        if (currentChainId !== 1672) {
-          statusDiv.style.color = 'var(--accent-red)';
-          statusDiv.innerText = 'Transaction cancelled. Wrong network.';
-          return;
-        }
-      }
-
-      try {
-
-        // Real wallet transaction
-        const valueHex = '0x' + (BigInt(Math.floor(amount * 1e18))).toString(16);
-        const txHash = await window.ethereum.request({
-          method: 'eth_sendTransaction',
-          params: [{
-            from: userAddress,
-            to: validator,
-            value: valueHex
-          }]
-        });
-
-        statusDiv.style.color = 'var(--accent-green)';
-        statusDiv.innerHTML = `🎉 Delegation transaction confirmed! <a href="https://scan.pharos.xyz/tx/${txHash}" target="_blank" style="color:var(--accent-purple); text-decoration:underline;">View Tx ↗</a>`;
-        
-        addTxToLedger("STAKE", amount.toString(), "SUCCESS", txHash);
-      } catch (err) {
-        statusDiv.style.color = 'var(--accent-red)';
-        statusDiv.innerText = `Delegation failed: ${err.message}`;
-        addTxToLedger("STAKE", amount.toString(), "FAILED", "N/A");
-      }
     }
 
-    // Helpers
     function escapeHtml(text) {
       return text
         .replace(/&/g, "&amp;")
@@ -1814,237 +1330,11 @@
     }
 
     function formatMarkdown(text) {
-      // Basic parser to replace **bold**, `code`, and newlines
       let formatted = escapeHtml(text);
       formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
       formatted = formatted.replace(/`(.*?)`/g, '<code style="background: rgba(255,255,255,0.06); padding: 0.1rem 0.3rem; border-radius: 4px; font-family: monospace;">$1</code>');
       formatted = formatted.replace(/\n/g, '<br>');
       return `<p>${formatted}</p>`;
-    }
-
-    // Web3 Wallet Functions
-    function openWalletModal() {
-      document.getElementById('wallet-modal').style.display = 'flex';
-    }
-
-    function closeWalletModal() {
-      document.getElementById('wallet-modal').style.display = 'none';
-    }
-
-    async function connectWalletProvider(providerName) {
-      closeWalletModal();
-
-      if (typeof window.ethereum === 'undefined') {
-        alert('No Web3 wallet extension detected. Please install MetaMask or Pharos Wallet.');
-        openWalletModal();
-        return;
-      }
-
-      try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        userAddress = accounts[0];
-        isWalletConnected = true;
-        
-        const chainIdHex = await window.ethereum.request({ method: 'eth_chainId' });
-        currentChainId = parseInt(chainIdHex, 16);
-        
-        updateWalletUI();
-        addTxToLedger("WALLET_LOGIN", `Web3 Injected Wallet (${providerName})`, "SUCCESS", "N/A");
-        
-        // Append alert bubble to chat
-        const chatMessages = document.getElementById('chat-messages');
-        const alertBubble = document.createElement('div');
-        alertBubble.className = 'chat-bubble bubble-agent';
-        alertBubble.innerHTML = `<p>🟢 Connected to Web3 Wallet: \`${userAddress.substring(0, 6)}...${userAddress.substring(38)}\`. Checking network status...</p>`;
-        chatMessages.appendChild(alertBubble);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-
-        if (currentChainId !== 1672) {
-          await switchToPharosMainnet();
-        }
-      } catch (err) {
-        console.error('Wallet connection error:', err);
-        alert('Wallet connection failed: ' + err.message);
-      }
-    }
-
-    function disconnectWallet() {
-      userAddress = null;
-      isWalletConnected = false;
-      currentChainId = null;
-      updateWalletUI();
-      addTxToLedger("WALLET_LOGOUT", "Disconnected wallet session", "SUCCESS", "N/A");
-    }
-
-    async function switchToPharosMainnet() {
-      if (typeof window.ethereum === 'undefined') {
-        return;
-      }
-
-      try {
-        await window.ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x688' }], // 1672 is 0x688 in hex
-        });
-        currentChainId = 1672;
-        updateWalletUI();
-        addTxToLedger("NETWORK_SWITCH", "Pharos Mainnet", "SUCCESS", "N/A");
-      } catch (switchError) {
-        // This error code indicates that the chain has not been added to MetaMask.
-        if (switchError.code === 4902) {
-          try {
-            await window.ethereum.request({
-              method: 'wallet_addEthereumChain',
-              params: [{
-                chainId: '0x688',
-                chainName: 'Pharos Mainnet',
-                nativeCurrency: {
-                  name: 'PROS',
-                  symbol: 'PROS',
-                  decimals: 18
-                },
-                rpcUrls: ['https://rpc.pharos.xyz'],
-                blockExplorerUrls: ['https://scan.pharos.xyz']
-              }],
-            });
-            currentChainId = 1672;
-            updateWalletUI();
-            addTxToLedger("NETWORK_SWITCH", "Added & Switched to Pharos Mainnet", "SUCCESS", "N/A");
-          } catch (addError) {
-            console.error("Failed to add Pharos Network", addError);
-            alert("Failed to add Pharos Network: " + addError.message);
-          }
-        } else {
-          console.error("Failed to switch to Pharos Network", switchError);
-          alert("Failed to switch to Pharos Network: " + switchError.message);
-        }
-      }
-    }
-
-    function updateWalletUI() {
-      const connectBtn = document.getElementById('connect-wallet-btn');
-      const connectedInfo = document.getElementById('wallet-connected-info');
-      const addressSpan = document.getElementById('wallet-address');
-      const networkBadge = document.getElementById('network-badge');
-
-      if (isWalletConnected && userAddress) {
-        connectBtn.style.display = 'none';
-        connectedInfo.style.display = 'flex';
-        addressSpan.innerText = userAddress.substring(0, 6) + '...' + userAddress.substring(38);
-        
-        if (currentChainId === 1672) {
-          networkBadge.innerText = '🟢 Pharos';
-          networkBadge.className = 'badge badge-success';
-          networkBadge.style.cursor = 'default';
-          networkBadge.onclick = null;
-        } else {
-          networkBadge.innerText = '🔴 Switch to Pharos';
-          networkBadge.className = 'badge badge-danger';
-          networkBadge.style.cursor = 'pointer';
-          networkBadge.onclick = switchToPharosMainnet;
-        }
-      } else {
-        connectBtn.style.display = 'inline-flex';
-        connectedInfo.style.display = 'none';
-      }
-    }
-
-    async function sendTip() {
-      const amountInput = document.getElementById('tip-amount');
-      const amount = parseFloat(amountInput.value);
-      const statusDiv = document.getElementById('tip-status');
-
-      if (isNaN(amount) || amount <= 0) {
-        alert('Please enter a valid positive number for the tip amount.');
-        return;
-      }
-
-      if (!isWalletConnected) {
-        alert('Please connect your wallet first.');
-        openWalletModal();
-        return;
-      }
-
-      statusDiv.style.display = 'block';
-      statusDiv.style.color = 'var(--text-secondary)';
-      statusDiv.innerText = 'Initializing transaction...';
-
-      const devAddress = '0x8B3217038eF3F827aC9eD396264906dCDb16d10c';
-
-      if (currentChainId !== 1672 && typeof window.ethereum !== 'undefined') {
-        statusDiv.innerText = 'Switching to Pharos Mainnet...';
-        await switchToPharosMainnet();
-        if (currentChainId !== 1672) {
-          statusDiv.style.color = 'var(--accent-red)';
-          statusDiv.innerText = 'Transaction cancelled. Wrong network.';
-          return;
-        }
-      }
-
-      try {
-
-        // Real wallet transaction
-        const valueHex = '0x' + (BigInt(Math.floor(amount * 1e18))).toString(16);
-        const txHash = await window.ethereum.request({
-          method: 'eth_sendTransaction',
-          params: [{
-            from: userAddress,
-            to: devAddress,
-            value: valueHex
-          }]
-        });
-
-        statusDiv.style.color = 'var(--accent-green)';
-        statusDiv.innerHTML = `🎉 Thank you! Tip sent. <a href="https://scan.pharos.xyz/tx/${txHash}" target="_blank" style="color:var(--accent-purple); text-decoration:underline;">View Tx ↗</a>`;
-        
-        addTxToLedger("TIP_DEV", amount.toString(), "SUCCESS", txHash);
-      } catch (err) {
-        statusDiv.style.color = 'var(--accent-red)';
-        statusDiv.innerText = `Failed: ${err.message}`;
-        addTxToLedger("TIP_DEV", amount.toString(), "FAILED", "N/A");
-      }
-    }
-
-    function addTxToLedger(type, amount, status, hash) {
-      localUserTransactions.unshift({
-        hash: hash,
-        type: type,
-        amount: amount,
-        token: 'PROS',
-        status: status,
-        timestamp: new Date().toISOString()
-      });
-      // Limit local logs
-      if (localUserTransactions.length > 50) {
-        localUserTransactions.pop();
-      }
-      
-      // Update stats balances if it is simulated or real successful transaction
-      if (status === 'SUCCESS' && type === 'TIP_DEV') {
-        const balanceProsEl = document.getElementById('balance-pros');
-        const currentBal = parseFloat(balanceProsEl.innerText);
-        const tipVal = parseFloat(amount) || 0;
-        if (!isNaN(currentBal) && currentBal >= tipVal) {
-          balanceProsEl.innerText = (currentBal - tipVal).toFixed(2);
-        }
-      }
-      
-      // Force refresh status
-      fetchAgentStatus();
-    }
-
-    function clearLedger() {
-      localUserTransactions = [];
-      const ledgerBody = document.getElementById('ledger-body');
-      ledgerBody.innerHTML = `
-        <tr>
-          <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 1.5rem 0; font-size: 0.8rem;">
-            No transactions recorded in this session.
-          </td>
-        </tr>
-      `;
-      // Trigger status refresh to reload agent transactions
-      fetchAgentStatus();
     }
   </script>
 </body>
