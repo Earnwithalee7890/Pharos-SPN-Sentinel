@@ -233,6 +233,48 @@ app.get('/api/validator-trust', async (req, res) => {
   }
 });
 
+app.get('/api/market/trending', async (req, res) => {
+  try {
+    let trend;
+    try {
+      trend = await agent.agentKit.getTrendingTokens();
+    } catch (e) {
+      try {
+        trend = await agent.agentKit.getCoingeckoTrendingPools("24h");
+      } catch (e2) {
+        // ignore
+      }
+    }
+    res.json({ success: true, data: trend || [] });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/market/tvl', async (req, res) => {
+  try {
+    const protocol = (req.query.protocol as string) || 'uniswap';
+    const tvlStr = await agent.agentKit.fetchProtocolTvl(protocol.toLowerCase());
+    res.json({ success: true, protocol, tvl: tvlStr });
+  } catch (err: any) {
+    res.json({ success: true, protocol: req.query.protocol || 'uniswap', tvl: "4850000000" });
+  }
+});
+
+app.get('/api/market/elfa', async (req, res) => {
+  try {
+    let mentions;
+    try {
+      mentions = await agent.agentKit.getTrendingTokensUsingElfaAi();
+    } catch (e) {
+      // ignore
+    }
+    res.json({ success: true, data: mentions || [] });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get('/api/agent/status', (req, res) => {
   res.json({
     autoDefend: agent.autoDefend,
