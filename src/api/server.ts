@@ -257,7 +257,7 @@ app.get('/api/market/tvl', async (req, res) => {
     const tvlStr = await agent.agentKit.fetchProtocolTvl(protocol.toLowerCase());
     res.json({ success: true, protocol, tvl: tvlStr });
   } catch (err: any) {
-    res.json({ success: true, protocol: req.query.protocol || 'uniswap', tvl: "4850000000" });
+    res.status(500).json({ error: err.message });
   }
 });
 
