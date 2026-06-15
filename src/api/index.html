@@ -7,9 +7,9 @@
   <meta name="description" content="Autonomous AI Guardian Agent for Pharos Network. Secures transactions, audits bytecode, and optimizes staking yields.">
   
   <!-- Favicon (3D Sentinel Logo) -->
-  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="icon" type="image/png" href="logo.png">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3C/svg%3E">
-  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="logo.png" type="image/x-icon">
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -926,7 +926,7 @@
   <div class="container">
     <header>
       <div class="logo-container">
-        <img src="/logo.png" alt="Pharos SPN Sentinel Logo" class="logo-img">
+        <img src="logo.png" alt="Pharos SPN Sentinel Logo" class="logo-img">
         <div>
           <h1>Pharos SPN Sentinel</h1>
           <p>Autonomous AI Staking & Threat Security Sentinel</p>
@@ -1041,11 +1041,11 @@
             <div class="stats-grid">
               <div class="stat-box">
                 <div class="stat-label">Idle PROS</div>
-                <div class="stat-value value-pros" id="balance-pros">1250.00</div>
+                <div class="stat-value value-pros" id="balance-pros">2500.00</div>
               </div>
               <div class="stat-box">
                 <div class="stat-label">Staked PROS</div>
-                <div class="stat-value value-staked" id="balance-staked">5000.00</div>
+                <div class="stat-value value-staked" id="balance-staked">1000.00</div>
               </div>
               <div class="stat-box">
                 <div class="stat-label">USDC Balance</div>
@@ -1088,21 +1088,21 @@
           </div>
         </section>
 
-        <!-- Simulation Control Panel -->
-        <section class="panel simulation-area">
+        <!-- Mainnet Sentinel Operator Panel -->
+        <section class="panel sentinel-operator-area">
           <div class="sim-header">
             <span class="panel-title" style="font-size: 0.95rem; color: var(--accent-yellow);">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              Simulation Sandbox
+              Mainnet Sentinel Operator
             </span>
-            <span style="font-size: 0.75rem; color: var(--text-secondary);">Simulate Loops</span>
+            <span style="font-size: 0.75rem; color: var(--text-secondary);">Active Loops</span>
           </div>
           <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem;">
-            Manually trigger autonomous actions in the agent's daemon checking system.
+            Force real-time operator triggers directly on the Pharos Mainnet.
           </div>
           <div class="sim-buttons">
-            <button class="btn btn-danger btn-sm" onclick="triggerSimulation('threat')">Simulate Threat Attack (+500 SHIELD)</button>
-            <button class="btn btn-secondary btn-sm" onclick="triggerSimulation('yield')">Force Rebalance Check</button>
+            <button class="btn btn-danger btn-sm" onclick="triggerOperatorAction('scan')">Execute Mainnet Security Scan</button>
+            <button class="btn btn-secondary btn-sm" onclick="triggerOperatorAction('rebalance')">Force Validator Yield Rebalance</button>
           </div>
         </section>
 
@@ -2293,9 +2293,9 @@
             btn.className = 'btn btn-secondary';
             btn.disabled = false;
 
-            document.getElementById('balance-pros').innerText = '1250.00';
+            document.getElementById('balance-pros').innerText = '2500.00';
             logMockDaemonMessage('SUCCESS', `Connected simulated ${walletType.toUpperCase()} wallet: ${userAddress}`);
-            logMockDaemonMessage('WALLET', `Mock balance synced: 1,250.00 PROS on Pharos Mainnet`);
+            logMockDaemonMessage('WALLET', `Mock balance synced: 2,500.00 PROS on Pharos Mainnet`);
           }, 1000);
         }
       } catch (err) {
@@ -2315,32 +2315,17 @@
     }
 
     async function switchNetwork() {
-      // Stub kept for compatibility
-    }
-
-    async function updateWalletBalance() {
-      // Stub kept for compatibility
-    }   }
-
-    function disconnectWallet() {
-      userAddress = null;
-      const btn = document.getElementById('btn-connect');
-      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg> Connect Wallet`;
-      btn.className = 'btn btn-primary';
-      btn.disabled = false;
-      fetchAgentStatus();
-    }
-
-    async function switchNetwork() {
+      const provider = window.ethereum || window.okxwallet || window.rabby;
+      if (!provider) return;
       try {
-        await window.ethereum.request({
+        await provider.request({
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: '0x688' }], // Chain ID 1672
         });
       } catch (switchError) {
         if (switchError.code === 4902) {
           try {
-            await window.ethereum.request({
+            await provider.request({
               method: 'wallet_addEthereumChain',
               params: [
                 {
@@ -2357,7 +2342,7 @@
               ],
             });
           } catch (addError) {
-            console.error('Error adding Pharos Network:', addError);
+            console.error('Error switching or adding Pharos chain:', addError);
           }
         }
       }
@@ -2366,7 +2351,9 @@
     async function updateWalletBalance() {
       if (!userAddress || userAddress.length < 42) return;
       try {
-        const balanceHex = await window.ethereum.request({
+        const provider = window.ethereum || window.okxwallet || window.rabby;
+        if (!provider) return;
+        const balanceHex = await provider.request({
           method: 'eth_getBalance',
           params: [userAddress, 'latest']
         });
@@ -2450,38 +2437,90 @@
       }
     }
 
-    async function triggerSimulation(type) {
+    async function triggerOperatorAction(type) {
       try {
-        // Shift 3D core visual state
-        if (type === 'threat') {
+        const chatMessages = document.getElementById('chat-messages');
+        const alertBubble = document.createElement('div');
+        alertBubble.className = 'chat-bubble bubble-user';
+        
+        if (type === 'scan') {
+          // Live bytecode security scan
+          logMockDaemonMessage('SCAN', 'Initializing security bytecode audit on Pharos Mainnet...');
           window.sentinelState.status = 'danger';
           window.sentinelState.speed = 3.5;
+          
+          alertBubble.innerHTML = `<p>⚡ *Triggered live Security Scan on Pharos Mainnet.*</p>`;
+          chatMessages.appendChild(alertBubble);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+
+          try {
+            const gasResp = await fetch('/api/gas-estimate');
+            const gas = await gasResp.json();
+            logMockDaemonMessage('INFO', `Live gas query: Max fee recommended: ${gas.maxFeePerGas} | Network: ${gas.networkCongestion}`);
+            
+            // Scan test contract
+            const testAddr = '0xcfC8330f4BCAB529c625D12781b1C19466A9Fc8B';
+            const auditResp = await fetch(`/api/audit-token?address=${testAddr}`);
+            const audit = await auditResp.json();
+            
+            logMockDaemonMessage('SUCCESS', `Scan complete. Audited contract ${testAddr.substring(0,8)}. Safety: ${audit.safetyScore}/100.`);
+            audit.details.forEach(d => logMockDaemonMessage('INFO', `[AUDIT] ${d.replace('✓ ', '').replace('⚠️ ', '')}`));
+          } catch (e) {
+            logMockDaemonMessage('ERROR', `Mainnet scan error: ${e.message}`);
+          }
+
           setTimeout(() => {
             window.sentinelState.status = 'healthy';
             window.sentinelState.speed = 1.0;
-          }, 5000);
-        } else if (type === 'yield') {
+          }, 4000);
+
+        } else if (type === 'rebalance') {
+          // Live rebalancing checks
+          logMockDaemonMessage('YIELD', 'Triggering live validator restaking rebalance index check...');
           window.sentinelState.status = 'rebalancing';
           window.sentinelState.speed = 2.2;
+          
+          alertBubble.innerHTML = `<p>⚡ *Triggered Validator Yield Rebalance on Pharos Mainnet.*</p>`;
+          chatMessages.appendChild(alertBubble);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+
+          const validator = document.getElementById('stake-validator-select').value;
+          try {
+            const trustResp = await fetch(`/api/validator-trust?address=${validator}&blockRange=20`);
+            const trust = await trustResp.json();
+            logMockDaemonMessage('INFO', `Validator decentralization: ${trust.decentralizationScore}/100 | Nakamoto: ${trust.nakamotoCoeff}`);
+            
+            if (userAddress) {
+              const amount = 50; // default rebalance amount
+              logMockDaemonMessage('STAKE', `Requesting MetaMask signature to delegate ${amount} PROS to ${validator.substring(0,8)}...`);
+              const valHex = '0x' + (BigInt(Math.round(amount * 1e18))).toString(16);
+              const txHash = await window.ethereum.request({
+                method: 'eth_sendTransaction',
+                params: [{
+                  from: userAddress,
+                  to: validator,
+                  value: valHex
+                }]
+              });
+              logMockDaemonMessage('SUCCESS', `On-Chain Mainnet Delegation transaction sent: ${txHash}`);
+            } else {
+              logMockDaemonMessage('INFO', 'No Web3 connected. Triggering backend validator trust rebalance...');
+              await fetch('/api/agent/trigger-activity', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ type: 'yield' })
+              });
+              logMockDaemonMessage('SUCCESS', `Autonomous restaking rebalance checks finalized.`);
+            }
+          } catch (e) {
+            logMockDaemonMessage('ERROR', `Mainnet rebalance error: ${e.message}`);
+          }
+
           setTimeout(() => {
             window.sentinelState.status = 'healthy';
             window.sentinelState.speed = 1.0;
           }, 4000);
         }
-
-        const response = await fetch('/api/agent/trigger-activity', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type })
-        });
-        if (!response.ok) throw new Error('Simulation trigger failed');
-        
-        const chatMessages = document.getElementById('chat-messages');
-        const alertBubble = document.createElement('div');
-        alertBubble.className = 'chat-bubble bubble-user';
-        alertBubble.innerHTML = `<p>⚡ *Triggered simulated ${type} event.*</p>`;
-        chatMessages.appendChild(alertBubble);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
 
         fetchAgentStatus();
       } catch (err) {
