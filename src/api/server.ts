@@ -193,6 +193,10 @@ app.get('/logo.png', (req, res) => {
   res.sendFile(path.join(process.cwd(), 'src', 'api', 'logo.png'));
 });
 
+app.get('/favicon.ico', (req, res) => {
+  res.sendFile(path.join(process.cwd(), 'src', 'api', 'logo.png'));
+});
+
 app.get('/api/audit-token', async (req, res) => {
   try {
     const address = req.query.address as string;
