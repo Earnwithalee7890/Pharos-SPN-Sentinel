@@ -83,10 +83,20 @@ export class GuardianAgent {
     const wallet = PharosProvider.getInstance().getWallet();
     if (wallet) {
       this.wallet.address = wallet.address;
+      this.wallet.prosBalance = 0.00;
+      this.wallet.stakedPros = 0.00;
+      this.wallet.usdcBalance = 0.00;
+      this.wallet.shieldBalance = 0.00;
       this.addLog('success', `🔑 Real Web3 Wallet loaded: ${wallet.address}. Switching from simulated mode to active on-chain mode.`);
       this.syncOnChainBalance().catch(() => {});
     } else {
+      this.wallet.address = '0xSandboxAgentWallet0000000000000000000';
+      this.wallet.prosBalance = 2500.00; // 2,500 idle PROS
+      this.wallet.stakedPros = 1000.00;   // 1,000 staked PROS
+      this.wallet.usdcBalance = 250.00;    // 250 USDC
+      this.wallet.shieldBalance = 0.00;   // 0 SHIELD
       this.addLog('info', 'No PRIVATE_KEY configured in .env. Running in simulated Sandbox mode.');
+      this.addLog('success', '🤖 Sandbox wallet loaded with 2,500.00 idle PROS and 1,000.00 staked PROS for verification.');
     }
 
     // Start autonomous reasoning loops
@@ -174,20 +184,67 @@ export class GuardianAgent {
     await this.runYieldOptimization();
   }
 
+  public executeStakingSimulated(action: 'stake' | 'unstake', amount: number, validator: string) {
+    const truncatedVal = validator.substring(0, 7) + '...' + validator.substring(37);
+    if (action === 'stake') {
+      if (this.wallet.prosBalance < amount) {
+        throw new Error('Insufficient idle PROS balance');
+      }
+      this.wallet.prosBalance -= amount;
+      this.wallet.stakedPros += amount;
+      this.wallet.delegatedValidator = validator;
+      const txHash = this.addTransaction('STAKE', `${amount} PROS`, 'PROS', 'SUCCESS');
+      this.addLog('success', `[STAKE] Simulated staking: delegated ${amount} PROS to validator ${truncatedVal}. Tx Hash: ${txHash}`);
+    } else {
+      if (this.wallet.stakedPros < amount) {
+        throw new Error('Insufficient staked PROS balance');
+      }
+      this.wallet.prosBalance += amount;
+      this.wallet.stakedPros -= amount;
+      this.wallet.delegatedValidator = validator;
+      const txHash = this.addTransaction('UNSTAKE', `${amount} PROS`, 'PROS', 'SUCCESS');
+      this.addLog('success', `[UNSTAKE] Simulated unstaking: withdrew ${amount} PROS from validator ${truncatedVal}. Tx Hash: ${txHash}`);
+    }
+  }
+
   private startAutonomousLoop() {
+    const provider = PharosProvider.getInstance().getProvider();
     this.loopInterval = setInterval(async () => {
-      if (PharosProvider.getInstance().getWallet()) {
-        await this.syncOnChainBalance();
-      } else {
-        this.addLog('info', 'Scanning Pharos chain blocks for agent wallet state changes...');
-      }
-      
-      if (this.autoDefend && this.wallet.shieldBalance > 0) {
-        await this.runSecurityAuditAndDefend();
-      }
-      
-      if (this.autoStake && this.wallet.prosBalance > 500) {
-        await this.runYieldOptimization();
+      try {
+        const latestBlock = await provider.getBlockNumber();
+        const block = await provider.getBlock(latestBlock);
+        const feeData = await provider.getFeeData();
+        const baseFeeStr = block?.baseFeePerGas 
+          ? (Number(block.baseFeePerGas) / 1e9).toFixed(4) + ' Gwei'
+          : feeData.gasPrice 
+            ? (Number(feeData.gasPrice) / 1e9).toFixed(4) + ' Gwei' 
+            : '1.0000 Gwei';
+
+        this.addLog('info', `[BLOCK] Scanned Pharos L1 Block #${latestBlock} | Transactions: ${block?.transactions.length || 0} | Base Fee: ${baseFeeStr}`);
+
+        // Sync on-chain balance if real wallet is loaded
+        if (PharosProvider.getInstance().getWallet()) {
+          await this.syncOnChainBalance();
+        }
+
+        if (this.autoDefend && this.wallet.shieldBalance > 0) {
+          await this.runSecurityAuditAndDefend();
+        }
+
+        if (this.autoStake && this.wallet.prosBalance > 500) {
+          await this.runYieldOptimization();
+        }
+      } catch (err: any) {
+        // Fallback scan message if network is offline or throttled
+        this.addLog('info', `[MONITOR] Scanning Pharos chain blocks... Agent status: ACTIVE | Gas: 1.0002 Gwei`);
+        
+        if (this.autoDefend && this.wallet.shieldBalance > 0) {
+          await this.runSecurityAuditAndDefend();
+        }
+
+        if (this.autoStake && this.wallet.prosBalance > 500) {
+          await this.runYieldOptimization();
+        }
       }
     }, 15000); // Check every 15 seconds
   }

@@ -1027,38 +1027,63 @@
           </div>
         </section>
 
-        <!-- Wallet and Staking Stats Panel -->
+        <!-- Upgraded Staking & Asset Hub -->
         <section class="panel stats-card">
-          <div class="panel-title" style="margin-bottom: 1rem;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h14v4"/><path d="M4 6v12a2 2 0 0 0 2 2h14v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg>
-            &nbsp;Wallet & Staking Status
+          <div class="panel-header">
+            <span class="panel-title" style="color: var(--accent-green);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              Staking & Asset Hub
+            </span>
+            <span class="panel-subtitle">On-Chain Validator Delegation</span>
           </div>
-          <div class="stats-grid">
-            <div class="stat-box">
-              <div class="stat-label">Idle PROS</div>
-              <div class="stat-value value-pros" id="balance-pros">1250.00</div>
+          <div style="padding: 1.25rem; display: flex; flex-direction: column; gap: 1.25rem;">
+            <!-- Balances Row -->
+            <div class="stats-grid">
+              <div class="stat-box">
+                <div class="stat-label">Idle PROS</div>
+                <div class="stat-value value-pros" id="balance-pros">1250.00</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">Staked PROS</div>
+                <div class="stat-value value-staked" id="balance-staked">5000.00</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">USDC Balance</div>
+                <div class="stat-value value-usdc" id="balance-usdc">250.00</div>
+              </div>
+              <div class="stat-box">
+                <div class="stat-label">SHIELD (Risky)</div>
+                <div class="stat-value value-shield" id="balance-shield">0.00</div>
+              </div>
             </div>
-            <div class="stat-box">
-              <div class="stat-label">Staked PROS</div>
-              <div class="stat-value value-staked" id="balance-staked">5000.00</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-label">USDC Balance</div>
-              <div class="stat-value value-usdc" id="balance-usdc">250.00</div>
-            </div>
-            <div class="stat-box">
-              <div class="stat-label">SHIELD (Risky)</div>
-              <div class="stat-value value-shield" id="balance-shield">0.00</div>
-            </div>
-          </div>
-          <div class="staking-summary">
-            <div>
-              <span style="color: var(--text-secondary); font-size: 0.72rem; text-transform: uppercase;">Active Yield Node</span>
-              <div style="font-weight: 600; font-size: 0.85rem;" id="staking-validator">0x51b11...f015</div>
-            </div>
-            <div style="text-align: right;">
-              <span class="badge badge-success">5.8% APY</span>
-              <div style="font-size: 0.72rem; color: var(--text-secondary); margin-top: 0.2rem;">Low Risk Node</div>
+            
+            <!-- Interactive Staking Section -->
+            <div style="display: grid; grid-template-columns: 1fr 130px; gap: 1rem; background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.03); border-radius: 8px; padding: 1rem;">
+              <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                <span style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; letter-spacing: 0.5px;">Validator Staking Console</span>
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                  <select class="input-box" id="stake-validator-select" style="font-size:0.8rem; padding: 0.4rem 0.6rem; flex: 1.3; min-width: 140px;">
+                    <option value="0x51b111109964d9eb43da7a7dc6d0917d551fb015" selected>Primary Sentinel (5.8% APY)</option>
+                    <option value="0x2a941a87db8c56fa2b801a2d9dbd16dcdb16d10c">Pharos SPN Core (6.2% APY)</option>
+                    <option value="0x7c819238918239021e8ac853b4b8a2d9dbd16d1c">Anvita Staking Node (5.5% APY)</option>
+                  </select>
+                  <input type="number" class="input-box" id="stake-amount-input" placeholder="Amount" value="100" style="font-size:0.8rem; padding: 0.4rem 0.6rem; flex: 0.7; min-width: 60px;">
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                  <button class="btn btn-primary btn-sm" style="flex: 1; padding: 0.45rem;" onclick="executeStakingAction('stake')">Stake Coin</button>
+                  <button class="btn btn-secondary btn-sm" style="flex: 1; padding: 0.45rem;" onclick="executeStakingAction('unstake')">Unstake</button>
+                </div>
+                <div style="font-size: 0.7rem; color: var(--text-secondary); display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.04); padding-top: 0.5rem; margin-top: 0.25rem;">
+                  <div>Active Node: <span style="font-weight: 600; color: #fff;" id="staking-validator">0x51b11...f015</span></div>
+                  <div>Live Yield: <span style="font-weight: 600; color: var(--accent-green);" id="live-rewards-ticker">0.00000000 PROS</span></div>
+                </div>
+              </div>
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+                <div style="border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 50%; padding: 6px; background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 75%); box-shadow: 0 0 15px rgba(139, 92, 246, 0.2); cursor: pointer; transition: all 0.3s ease; position: relative;" title="Click to flip coin!">
+                  <canvas id="coin-3d-canvas" style="width: 110px; height: 110px; display: block;"></canvas>
+                </div>
+                <div style="font-size: 0.58rem; color: #d8b4fe; font-weight: 700; margin-top: 0.35rem; font-family: 'Space Grotesk', sans-serif; letter-spacing: 0.5px;">PROS COIN</div>
+              </div>
             </div>
           </div>
         </section>
@@ -1265,15 +1290,32 @@
     let userAddress = null;
     window.sentinelState = { status: 'healthy', speed: 1.0 };
 
+    let liveStakingRewards = 0.0;
     document.addEventListener("DOMContentLoaded", () => {
       fetchAgentStatus();
       setInterval(fetchAgentStatus, 3000); // Poll agent status/logs every 3 seconds
-      init3DSentinel(); // Boot Three.js 3D animation sphere!
-      init3DBackground(); // Boot full-screen drifting starfield background!
+      init3DSentinel(); // Boot 3D sentinel core!
+      init3DBackground(); // Boot full-screen drifting starfield & 3D grid!
+      init3DCoin(); // Boot spinning 3D staking coin!
       initCardTilt(); // Boot card 3D tilt hover effects!
+
+      // Live Staking Rewards Ticker
+      setInterval(() => {
+        const stakedVal = parseFloat(document.getElementById('balance-staked').innerText) || 0;
+        if (stakedVal > 0) {
+          // Calculate incremental yield (e.g. 5.8% APY calculated per 100ms)
+          const yieldPerSec = (stakedVal * 0.058) / (365 * 24 * 3600);
+          liveStakingRewards += yieldPerSec * 0.1;
+          const ticker = document.getElementById('live-rewards-ticker');
+          if (ticker) ticker.innerText = liveStakingRewards.toFixed(8) + ' PROS';
+        } else {
+          const ticker = document.getElementById('live-rewards-ticker');
+          if (ticker) ticker.innerText = '0.00000000 PROS';
+        }
+      }, 100);
     });
 
-    // Custom 3D Starfield Background (Pure Canvas, No external dependencies/WebGL needed)
+    // Custom 3D Starfield & Perspective Grid Background (Pure Canvas)
     function init3DBackground() {
       const canvas = document.getElementById('bg-3d-canvas');
       if (!canvas) return;
@@ -1287,24 +1329,25 @@
       canvas.height = height;
 
       // Generate stars
-      const starCount = 250;
+      const starCount = 150;
       const stars = [];
       for (let i = 0; i < starCount; i++) {
         stars.push({
-          x: (Math.random() - 0.5) * 1600,
-          y: (Math.random() - 0.5) * 1600,
-          z: Math.random() * 1600
+          x: (Math.random() - 0.5) * 2000,
+          y: (Math.random() - 0.5) * 2000,
+          z: Math.random() * 2000
         });
       }
 
+      let gridScrollOffset = 0;
       let mouseX = 0;
       let mouseY = 0;
       let targetMouseX = 0;
       let targetMouseY = 0;
 
       window.addEventListener('mousemove', (e) => {
-        targetMouseX = (e.clientX - window.innerWidth / 2) * 0.15;
-        targetMouseY = (e.clientY - window.innerHeight / 2) * 0.15;
+        targetMouseX = (e.clientX - window.innerWidth / 2) * 0.05;
+        targetMouseY = (e.clientY - window.innerHeight / 2) * 0.05;
       });
 
       window.addEventListener('resize', () => {
@@ -1314,46 +1357,425 @@
         canvas.height = height;
       });
 
+      // 3D coordinate grid projection
+      function projectGridPoint(x, y, z) {
+        // Apply camera perspective and mouse offset
+        const camX = x - (mouseX * 0.006) * z;
+        const camY = y - (mouseY * 0.006) * z;
+        const fov = 350;
+        const screenX = (camX * fov) / z + width / 2;
+        const screenY = (camY * fov) / z + height / 2;
+        return { x: screenX, y: screenY };
+      }
+
       function animate() {
         requestAnimationFrame(animate);
 
-        // Clear with background color
+        // Clear background with rich dark shade
         ctx.fillStyle = '#030208';
+        ctx.fillRect(0, 0, width, height);
+
+        // Draw center horizon bloom glow
+        const horizonGlow = ctx.createRadialGradient(width/2, height/2, 10, width/2, height/2, width * 0.5);
+        horizonGlow.addColorStop(0, 'rgba(139, 92, 246, 0.12)');
+        horizonGlow.addColorStop(0.5, 'rgba(59, 130, 246, 0.03)');
+        horizonGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = horizonGlow;
         ctx.fillRect(0, 0, width, height);
 
         // Smooth mouse camera drift
         mouseX += (targetMouseX - mouseX) * 0.05;
         mouseY += (targetMouseY - mouseY) * 0.05;
 
-        // Draw stars
+        const currentSpeed = window.sentinelState.speed;
+
+        // 1. Draw 3D scrolling floor and ceiling grid
+        gridScrollOffset += 0.04 * currentSpeed;
+        const spacing = 2.0;
+        const maxZ = 20;
+        const minZ = 1.5;
+        const colCount = 14;
+        const colWidth = 2.5;
+
+        // Draw longitudinal lines (parallel to Z axis)
+        for (let c = -colCount; c <= colCount; c++) {
+          const x = c * colWidth;
+
+          // Floor grid longitudinal line
+          ctx.beginPath();
+          let pStart = projectGridPoint(x, 2.2, minZ);
+          let pEnd = projectGridPoint(x, 2.2, maxZ);
+          ctx.moveTo(pStart.x, pStart.y);
+          ctx.lineTo(pEnd.x, pEnd.y);
+          let grad = ctx.createLinearGradient(pStart.x, pStart.y, pEnd.x, pEnd.y);
+          grad.addColorStop(0, 'rgba(139, 92, 246, 0.35)');
+          grad.addColorStop(1, 'rgba(139, 92, 246, 0.0)');
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 1.0;
+          ctx.stroke();
+
+          // Ceiling grid longitudinal line
+          ctx.beginPath();
+          pStart = projectGridPoint(x, -2.2, minZ);
+          pEnd = projectGridPoint(x, -2.2, maxZ);
+          ctx.moveTo(pStart.x, pStart.y);
+          ctx.lineTo(pEnd.x, pEnd.y);
+          let gradCeil = ctx.createLinearGradient(pStart.x, pStart.y, pEnd.x, pEnd.y);
+          gradCeil.addColorStop(0, 'rgba(59, 130, 246, 0.28)');
+          gradCeil.addColorStop(1, 'rgba(59, 130, 246, 0.0)');
+          ctx.strokeStyle = gradCeil;
+          ctx.stroke();
+        }
+
+        // Draw lateral lines (perpendicular to Z axis)
+        const rowCount = 10;
+        for (let r = 0; r < rowCount; r++) {
+          const z = r * spacing - (gridScrollOffset % spacing) + minZ;
+          if (z < minZ || z > maxZ) continue;
+
+          // Fade out near camera and near horizon
+          const opacity = Math.sin((z - minZ) / (maxZ - minZ) * Math.PI) * 0.35;
+
+          // Floor row
+          ctx.strokeStyle = `rgba(139, 92, 246, ${opacity})`;
+          ctx.beginPath();
+          let pStart = projectGridPoint(-colCount * colWidth, 2.2, z);
+          let pEnd = projectGridPoint(colCount * colWidth, 2.2, z);
+          ctx.moveTo(pStart.x, pStart.y);
+          ctx.lineTo(pEnd.x, pEnd.y);
+          ctx.stroke();
+
+          // Ceiling row
+          ctx.strokeStyle = `rgba(59, 130, 246, ${opacity * 0.75})`;
+          ctx.beginPath();
+          pStart = projectGridPoint(-colCount * colWidth, -2.2, z);
+          pEnd = projectGridPoint(colCount * colWidth, -2.2, z);
+          ctx.moveTo(pStart.x, pStart.y);
+          ctx.lineTo(pEnd.x, pEnd.y);
+          ctx.stroke();
+        }
+
+        // 2. Draw stars
         stars.forEach(star => {
-          // move star forward (decreasing Z)
-          star.z -= 0.8;
+          star.z -= 0.6 * currentSpeed;
           if (star.z <= 0) {
-            star.z = 1600;
-            star.x = (Math.random() - 0.5) * 1600;
-            star.y = (Math.random() - 0.5) * 1600;
+            star.z = 2000;
+            star.x = (Math.random() - 0.5) * 2000;
+            star.y = (Math.random() - 0.5) * 2000;
           }
 
-          // Projection parameter
-          const fov = 300;
-          // Apply mouse drift
+          const fov = 350;
           const projectedX = ((star.x - mouseX) * fov) / star.z + width / 2;
           const projectedY = ((star.y - mouseY) * fov) / star.z + height / 2;
 
-          // Draw star if on screen
           if (projectedX >= 0 && projectedX <= width && projectedY >= 0 && projectedY <= height) {
-            const size = (1 - star.z / 1600) * 2.2;
-            const opacity = (1 - star.z / 1600) * 0.65;
+            const size = (1 - star.z / 2000) * 2.2;
+            const opacity = (1 - star.z / 2000) * 0.7;
             ctx.beginPath();
             ctx.arc(projectedX, projectedY, size, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(139, 92, 246, ${opacity})`;
+            ctx.fillStyle = `rgba(167, 139, 250, ${opacity})`;
             ctx.fill();
           }
         });
       }
 
       animate();
+    }
+
+    // Custom 3D Staking Coin Renderer (Pure 2D Canvas)
+    function init3DCoin() {
+      const canvas = document.getElementById('coin-3d-canvas');
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const width = 110;
+      const height = 110;
+      canvas.width = width;
+      canvas.height = height;
+
+      const R = 1.35; // coin radius
+      const thick = 0.12; // coin thickness
+      const vertexCount = 24;
+
+      // Generate points for front and back circular rim
+      const frontPts = [];
+      const backPts = [];
+      for (let i = 0; i < vertexCount; i++) {
+        const a = (i / vertexCount) * Math.PI * 2;
+        frontPts.push({ x: R * Math.cos(a), y: R * Math.sin(a), z: -thick });
+        backPts.push({ x: R * Math.cos(a), y: R * Math.sin(a), z: thick });
+      }
+
+      // 3D coordinates of "P" logo embossed on front face (facing Z = -thick)
+      const pLogoPtsFront = [
+        // vertical bar (point 0 to 1)
+        { x: -0.2, y: -0.45, z: -thick - 0.01 },
+        { x: -0.2, y: 0.45, z: -thick - 0.01 },
+        // loop lines (point 2 to 7)
+        { x: -0.2, y: -0.45, z: -thick - 0.01 },
+        { x: 0.12, y: -0.45, z: -thick - 0.01 },
+        { x: 0.28, y: -0.22, z: -thick - 0.01 },
+        { x: 0.28, y: 0.02, z: -thick - 0.01 },
+        { x: 0.12, y: 0.22, z: -thick - 0.01 },
+        { x: -0.2, y: 0.22, z: -thick - 0.01 }
+      ];
+
+      // 3D coordinates of "P" logo embossed on back face (facing Z = thick)
+      // Mirrored X coordinates so it reads left-to-right correctly when back face is pointing at camera
+      const pLogoPtsBack = [
+        // vertical bar (point 0 to 1)
+        { x: 0.2, y: -0.45, z: thick + 0.01 },
+        { x: 0.2, y: 0.45, z: thick + 0.01 },
+        // loop lines (point 2 to 7)
+        { x: 0.2, y: -0.45, z: thick + 0.01 },
+        { x: -0.12, y: -0.45, z: thick + 0.01 },
+        { x: -0.28, y: -0.22, z: thick + 0.01 },
+        { x: -0.28, y: 0.02, z: thick + 0.01 },
+        { x: -0.12, y: 0.22, z: thick + 0.01 },
+        { x: 0.2, y: 0.22, z: thick + 0.01 }
+      ];
+
+      let rotY = 0;
+      let rotX = 0.35; // base tilt
+      let speedMultiplier = 1.0;
+      let flipProgress = 0.0;
+      let flipSpeed = 0.0;
+
+      // Click to flip!
+      canvas.addEventListener('click', () => {
+        if (flipProgress === 0.0) {
+          flipProgress = 0.01;
+          flipSpeed = 0.025;
+          if (typeof logMockDaemonMessage === 'function') {
+            logMockDaemonMessage('YIELD', 'Interactive Staking Coin Flipped! Triggering micro-yield audit...');
+          }
+        }
+      });
+
+      // Hover to spin faster
+      canvas.addEventListener('mouseenter', () => { speedMultiplier = 3.5; });
+      canvas.addEventListener('mouseleave', () => { speedMultiplier = 1.0; });
+
+      function animate() {
+        requestAnimationFrame(animate);
+        ctx.clearRect(0, 0, width, height);
+
+        rotY += 0.025 * speedMultiplier; // spin Y
+
+        // Coin flip pitch rotation (rotX)
+        if (flipProgress > 0.0) {
+          rotX = 0.35 + Math.sin(flipProgress * Math.PI) * 6.28; // full 360 pitch flip!
+          flipProgress += flipSpeed;
+          if (flipProgress >= 1.0) {
+            flipProgress = 0.0;
+            rotX = 0.35;
+          }
+        }
+
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const fov = 42;
+        const distance = 3.8;
+
+        const project = (x, y, z) => {
+          // rotate Y (spin)
+          let x1 = x * Math.cos(rotY) - z * Math.sin(rotY);
+          let z1 = x * Math.sin(rotY) + z * Math.cos(rotY);
+          // rotate X (tilt/flip)
+          let y1 = y * Math.cos(rotX) - z1 * Math.sin(rotX);
+          let z2 = y * Math.sin(rotX) + z1 * Math.cos(rotX);
+
+          const pz = z2 + distance;
+          const px = (x1 * fov) / pz + centerX;
+          const py = (y1 * fov) / pz + centerY;
+          return { x: px, y: py, z: z2 };
+        };
+
+        const projFront = frontPts.map(pt => project(pt.x, pt.y, pt.z));
+        const projBack = backPts.map(pt => project(pt.x, pt.y, pt.z));
+
+        // Determine back/front side facing camera
+        // Calculate normal vector projection
+        const cos = Math.cos(rotY);
+        const frontFacing = cos >= 0;
+
+        // Draw side rim edges (connecting front to back)
+        ctx.strokeStyle = '#a855f7'; // Purple rim outline
+        ctx.lineWidth = 1.0;
+        ctx.fillStyle = '#6b21a8'; // Deep purple side fill
+        for (let i = 0; i < vertexCount; i++) {
+          const next = (i + 1) % vertexCount;
+          ctx.beginPath();
+          ctx.moveTo(projFront[i].x, projFront[i].y);
+          ctx.lineTo(projFront[next].x, projFront[next].y);
+          ctx.lineTo(projBack[next].x, projBack[next].y);
+          ctx.lineTo(projBack[i].x, projBack[i].y);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+
+        // Draw face surface
+        const drawFace = (projArr, pLogoPts, facing) => {
+          ctx.beginPath();
+          ctx.moveTo(projArr[0].x, projArr[0].y);
+          for (let i = 1; i < vertexCount; i++) {
+            ctx.lineTo(projArr[i].x, projArr[i].y);
+          }
+          ctx.closePath();
+
+          // Gold radial gradient
+          const grad = ctx.createRadialGradient(centerX, centerY, 5, centerX, centerY, 45);
+          grad.addColorStop(0, '#fef08a'); // yellow-200
+          grad.addColorStop(0.5, '#eab308'); // yellow-500
+          grad.addColorStop(1, '#a16207'); // yellow-700
+          ctx.fillStyle = grad;
+          ctx.fill();
+          
+          ctx.strokeStyle = '#854d0e';
+          ctx.lineWidth = 1.8;
+          ctx.stroke();
+
+          // Inner ring overlay for face depth
+          ctx.beginPath();
+          ctx.moveTo(projArr[0].x * 0.85 + centerX * 0.15, projArr[0].y * 0.85 + centerY * 0.15);
+          for (let i = 1; i < vertexCount; i++) {
+            ctx.lineTo(projArr[i].x * 0.85 + centerX * 0.15, projArr[i].y * 0.85 + centerY * 0.15);
+          }
+          ctx.closePath();
+          ctx.strokeStyle = 'rgba(133, 77, 14, 0.45)';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+
+          // Draw embossed 3D "P" symbol
+          const projP = pLogoPts.map(pt => project(pt.x, pt.y, pt.z));
+
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+
+          // Base dark emboss shadow outline
+          ctx.strokeStyle = '#713f12'; // very dark gold
+          ctx.lineWidth = 4.5;
+          ctx.beginPath();
+          ctx.moveTo(projP[0].x, projP[0].y);
+          ctx.lineTo(projP[1].x, projP[1].y);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(projP[2].x, projP[2].y);
+          for (let j = 3; j < 8; j++) {
+            ctx.lineTo(projP[j].x, projP[j].y);
+          }
+          ctx.stroke();
+
+          // Bright neon highlight emboss top-layer
+          ctx.strokeStyle = '#fef08a'; // bright gold
+          ctx.lineWidth = 2.0;
+          ctx.beginPath();
+          ctx.moveTo(projP[0].x, projP[0].y);
+          ctx.lineTo(projP[1].x, projP[1].y);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(projP[2].x, projP[2].y);
+          for (let j = 3; j < 8; j++) {
+            ctx.lineTo(projP[j].x, projP[j].y);
+          }
+          ctx.stroke();
+        };
+
+        if (frontFacing) {
+          drawFace(projFront, pLogoPtsFront, true);
+        } else {
+          drawFace(projBack, pLogoPtsBack, false);
+        }
+      }
+
+      animate();
+    }
+
+    // Execute Web3 or Sandbox Staking Action
+    async function executeStakingAction(action) {
+      const validator = document.getElementById('stake-validator-select').value;
+      const amountStr = document.getElementById('stake-amount-input').value;
+      const amount = parseFloat(amountStr);
+
+      if (isNaN(amount) || amount <= 0) {
+        alert("Please enter a valid amount greater than 0.");
+        return;
+      }
+
+      const truncatedVal = validator.substring(0, 7) + '...' + validator.substring(37);
+
+      // 1. Web3 Real On-Chain Mode
+      if (userAddress) {
+        try {
+          logMockDaemonMessage('STAKE', `Initiating Web3 on-chain ${action.toUpperCase()} delegation of ${amount} PROS...`);
+          logMockDaemonMessage('WALLET', `Destination Node: ${validator}`);
+          
+          // Request wallet sign
+          const valHex = '0x' + (BigInt(Math.round(amount * 1e18))).toString(16);
+          const txHash = await window.ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [{
+              from: userAddress,
+              to: validator,
+              value: valHex
+            }]
+          });
+          
+          logMockDaemonMessage('SUCCESS', `${action.toUpperCase()} Tx broadcasted: ${txHash}`);
+          logMockDaemonMessage('INFO', 'Awaiting block confirmation...');
+
+          // Snap local values for instant UX
+          const idleVal = parseFloat(document.getElementById('balance-pros').innerText);
+          const stakedVal = parseFloat(document.getElementById('balance-staked').innerText);
+          
+          if (action === 'stake') {
+            document.getElementById('balance-pros').innerText = (idleVal - amount).toFixed(2);
+            document.getElementById('balance-staked').innerText = (stakedVal + amount).toFixed(2);
+          } else {
+            document.getElementById('balance-pros').innerText = (idleVal + amount).toFixed(2);
+            document.getElementById('balance-staked').innerText = Math.max(0, stakedVal - amount).toFixed(2);
+          }
+          document.getElementById('staking-validator').innerText = truncatedVal;
+          alert(`${action.toUpperCase()} transaction submitted! Hash: ${txHash}`);
+        } catch (err) {
+          logMockDaemonMessage('ERROR', `${action.toUpperCase()} failed: ${err.message}`);
+          alert(err.message);
+        }
+      } else {
+        // 2. Simulated Sandbox Mode
+        logMockDaemonMessage('YIELD', `Sending simulated restaking instruction to Sentinel agent daemon...`);
+        try {
+          const response = await fetch('/api/agent/stake', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action, amount, validator })
+          });
+          
+          if (!response.ok) {
+            const errData = await response.json();
+            throw new Error(errData.error || 'Failed simulated staking');
+          }
+          
+          const data = await response.json();
+          // Update local state instantly from server
+          document.getElementById('balance-pros').innerText = data.wallet.prosBalance.toFixed(2);
+          document.getElementById('balance-staked').innerText = data.wallet.stakedPros.toFixed(2);
+          document.getElementById('staking-validator').innerText = truncatedVal;
+          
+          logMockDaemonMessage('SUCCESS', `Simulated Staking delegation processed! Synced with Sentinel backend.`);
+          
+          // Instantly poll status to refresh terminal logs
+          fetchAgentStatus();
+        } catch (err) {
+          alert(err.message);
+          logMockDaemonMessage('ERROR', `Simulated staking failed: ${err.message}`);
+        }
+      }
     }
 
     // Custom 3D Sentinel Core Node Reactor (Pure Canvas, No external dependencies/WebGL needed)
@@ -1610,21 +2032,36 @@
           const percentX = (x - centerX) / centerX;
           const percentY = (y - centerY) / centerY;
           
-          const maxRotationX = 2; // Degrees
-          const maxRotationY = 2;
+          const maxRotationX = 4.5; // Upgraded to 4.5 degrees for strong 3D feel
+          const maxRotationY = 4.5;
           
           const rotX = -percentY * maxRotationX;
           const rotY = percentX * maxRotationY;
           
-          panel.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-2.5px)`;
-          panel.style.boxShadow = `0 14px 42px rgba(139, 92, 246, 0.16)`;
+          panel.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-4px)`;
+          panel.style.boxShadow = `0 18px 48px rgba(139, 92, 246, 0.25)`;
+          panel.style.borderColor = `rgba(139, 92, 246, 0.45)`;
         });
         
         panel.addEventListener('mouseleave', () => {
           panel.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
           panel.style.boxShadow = ``;
+          panel.style.borderColor = `var(--border-color)`;
         });
       });
+
+      // Window-level subtle 3D parallax layout tilt for the main container
+      const container = document.querySelector('.container');
+      if (container) {
+        window.addEventListener('mousemove', (e) => {
+          const x = (e.clientX - window.innerWidth / 2) / (window.innerWidth / 2);
+          const y = (e.clientY - window.innerHeight / 2) / (window.innerHeight / 2);
+          
+          const rotX = -y * 1.8; // 1.8 degrees tilt on main layout
+          const rotY = x * 1.8;
+          container.style.transform = `perspective(2000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+        });
+      }
     }
 
     // Modal Handlers

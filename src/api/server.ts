@@ -320,6 +320,28 @@ app.post('/api/agent/toggle', (req, res) => {
   }
 });
 
+app.post('/api/agent/stake', (req, res) => {
+  try {
+    const { action, amount, validator } = req.body;
+    if (action !== 'stake' && action !== 'unstake') {
+      return res.status(400).json({ error: 'Invalid action. Must be stake or unstake' });
+    }
+    const parsedAmount = parseFloat(amount);
+    if (isNaN(parsedAmount) || parsedAmount <= 0) {
+      return res.status(400).json({ error: 'Invalid amount' });
+    }
+    agent.executeStakingSimulated(action, parsedAmount, validator || '0x51b111109964d9eb43da7a7dc6d0917d551fb015');
+    res.json({
+      success: true,
+      wallet: agent.wallet,
+      logs: agent.logs,
+      transactions: agent.transactions
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.post('/api/agent/trigger-activity', async (req, res) => {
   try {
     const { type } = req.body;
