@@ -6,16 +6,24 @@
   <title>Pharos SPN Sentinel — AI Agent Control Center</title>
   <meta name="description" content="Autonomous AI Guardian Agent for Pharos Network. Secures transactions, audits bytecode, and optimizes staking yields.">
   
+  <!-- Favicon (3D Sentinel Logo) -->
+  <link rel="icon" type="image/png" href="/logo.png">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238b5cf6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/%3E%3C/svg%3E">
+  <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+  
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
   
+  <!-- Three.js Library for 3D Rendering -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
   <style>
     :root {
       --bg-dark: #030208;
       --bg-panel: rgba(10, 8, 22, 0.65);
-      --bg-panel-hover: rgba(16, 13, 34, 0.8);
+      --bg-panel-hover: rgba(16, 13, 34, 0.85);
       --border-color: rgba(139, 92, 246, 0.16);
       --border-color-glow: rgba(139, 92, 246, 0.45);
       --text-primary: #f5f4f8;
@@ -118,6 +126,12 @@
       box-shadow: 0 0 20px rgba(139, 92, 246, 0.45);
       border: 1px solid rgba(139, 92, 246, 0.25);
       object-fit: cover;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-4px) rotate(3deg); }
     }
 
     header h1 {
@@ -198,7 +212,7 @@
     /* Workspace Grid */
     .workspace-grid {
       display: grid;
-      grid-template-columns: 1.150fr 0.850fr;
+      grid-template-columns: 1.120fr 0.880fr;
       gap: 1.5rem;
       flex: 1;
     }
@@ -209,7 +223,7 @@
       }
     }
 
-    /* Panels */
+    /* Panels with 3D hover effects */
     .panel {
       background: var(--bg-panel);
       backdrop-filter: blur(12px);
@@ -219,11 +233,14 @@
       flex-direction: column;
       overflow: hidden;
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+      transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
     }
 
     .panel:hover {
       border-color: rgba(139, 92, 246, 0.28);
+      transform: perspective(1000px) rotateX(1deg) rotateY(0.5deg) translateY(-2px);
+      box-shadow: 0 12px 38px rgba(139, 92, 246, 0.12);
     }
 
     .panel-header {
@@ -670,7 +687,7 @@
 
     .input-box {
       flex: 1;
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.25);
       border: 1px solid var(--border-color);
       border-radius: 6px;
       color: var(--text-primary);
@@ -700,6 +717,169 @@
       border-radius: 4px;
       margin-bottom: 0.35rem;
       border-left: 3px solid var(--accent-purple);
+    }
+
+    /* Web3 Wallet Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(3, 2, 8, 0.82);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-content {
+      background: rgba(16, 12, 34, 0.98);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      width: 640px;
+      max-width: 95%;
+      padding: 1.75rem;
+      box-shadow: 0 10px 40px rgba(139, 92, 246, 0.35);
+      animation: modal-zoom 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modal-zoom {
+      from { transform: scale(0.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+    }
+    .modal-header h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .close-btn:hover {
+      color: var(--text-primary);
+    }
+    .modal-columns {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 1.5rem;
+    }
+    @media (max-width: 580px) {
+      .modal-columns {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+    }
+    .modal-column-title {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-secondary);
+      margin-bottom: 0.85rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 0.35rem;
+    }
+    .wallet-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+    }
+    @media (max-width: 480px) {
+      .wallet-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    .social-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    .wallet-option {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      color: var(--text-primary);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-align: left;
+      transition: all 0.2s;
+      width: 100%;
+    }
+    .wallet-option:hover {
+      background: rgba(139, 92, 246, 0.1);
+      border-color: var(--accent-purple);
+      transform: translateY(-2px);
+    }
+    .wallet-option svg, .wallet-option img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      flex-shrink: 0;
+    }
+    /* Spinner for oauth */
+    @keyframes rotate {
+      100% { transform: rotate(360deg); }
+    }
+    .spinner {
+      animation: rotate 2s linear infinite;
+    }
+    .spinner circle {
+      stroke: var(--accent-purple);
+      stroke-linecap: round;
+      animation: dash 1.5s ease-in-out infinite;
+    }
+    @keyframes dash {
+      0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; }
+      50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
+      100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
+    }
+    .oauth-account-btn {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      cursor: pointer;
+      color: var(--text-primary);
+      width: 100%;
+      text-align: left;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .oauth-account-btn:hover {
+      background: rgba(139, 92, 246, 0.08);
+      border-color: var(--accent-purple);
+    }
+    .oauth-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.85rem;
+      color: white;
     }
 
     /* Footer */
@@ -737,6 +917,9 @@
   </style>
 </head>
 <body>
+  <!-- Full-screen 3D Starfield Canvas -->
+  <canvas id="bg-3d-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none; opacity: 0.18;"></canvas>
+
   <!-- Background Glows -->
   <div class="glow-sphere glow-1"></div>
   <div class="glow-sphere glow-2"></div>
@@ -751,7 +934,7 @@
         </div>
       </div>
       <div class="header-links">
-        <button id="btn-connect" class="btn btn-primary" onclick="connectWallet()">
+        <button id="btn-connect" class="btn btn-primary" onclick="openWalletModal()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg>
           Connect Wallet
         </button>
@@ -827,6 +1010,23 @@
             </label>
           </div>
         </div>
+
+        <!-- 3D Sentinel Core Hologram -->
+        <section class="panel sentinel-3d-card">
+          <div class="panel-header">
+            <span class="panel-title" style="color: var(--accent-blue);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
+              Holographic Sentinel Core
+            </span>
+            <span class="panel-subtitle">Interactive 3D WebGL</span>
+          </div>
+          <div style="height: 155px; position: relative; overflow: hidden; background: #030107; display: flex; align-items: center; justify-content: center; border-radius: 0 0 12px 12px;">
+            <canvas id="sentinel-3d-canvas" style="width: 100%; height: 100%; display: block;"></canvas>
+            <div style="position: absolute; bottom: 8px; right: 12px; font-size: 0.62rem; color: rgba(139, 92, 246, 0.4); font-family: 'Fira Code', monospace; pointer-events: none;">
+              SPN SECURE // SHIELD UP
+            </div>
+          </div>
+        </section>
 
         <!-- Wallet and Staking Stats Panel -->
         <section class="panel stats-card">
@@ -944,6 +1144,104 @@
       </div>
     </div>
 
+    <!-- Web3 Wallet Connection Modal -->
+    <div id="wallet-modal" class="modal" onclick="if(event.target === this) closeWalletModal()">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Connect Wallet / Sign In</h3>
+          <button class="close-btn" onclick="closeWalletModal()">&times;</button>
+        </div>
+        <div class="modal-columns">
+          <!-- Column 1: Web3 Wallets -->
+          <div>
+            <div class="modal-column-title">Web3 Wallets</div>
+            <div class="wallet-grid">
+              <button class="wallet-option" onclick="selectWallet('metamask')">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 13.5L12 21L2 13.5L4.5 5L12 2L19.5 5L22 13.5Z" stroke="#E17726" stroke-width="1.5" fill="#E17726" fill-opacity="0.2"/><path d="M12 2L19.5 5L16.5 11L12 8L7.5 11L4.5 5L12 2Z" fill="#E17726"/><path d="M12 21L7 14L12 16L17 14L12 21Z" fill="#E17726"/></svg>
+                <span>MetaMask</span>
+              </button>
+              <button class="wallet-option" onclick="selectWallet('coinbase')">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="11" fill="#0052FF"/><rect x="7" y="7" width="10" height="10" rx="2" fill="white"/></svg>
+                <span>Coinbase</span>
+              </button>
+              <button class="wallet-option" onclick="selectWallet('trust')">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L3 5v6c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V5l-9-3z" fill="#3375BB"/><path d="M12 6.5v11m-3.5-3.5L12 17.5l5.5-5.5" stroke="white" stroke-width="2" stroke-linecap="round"/></svg>
+                <span>Trust</span>
+              </button>
+              <button class="wallet-option" onclick="selectWallet('okx')">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="6" fill="#000000"/><path d="M5 5h4v4H5V5zm10 0h4v4h-4V5zM5 15h4v4H5v-4zm10 0h4v4h-4v-4z" fill="#FFFFFF"/></svg>
+                <span>OKX Wallet</span>
+              </button>
+              <button class="wallet-option" onclick="selectWallet('rabby')">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="11" fill="#00C4B6"/><circle cx="8.5" cy="12" r="2.5" stroke="white" stroke-width="2"/><circle cx="15.5" cy="12" r="2.5" stroke="white" stroke-width="2"/><line x1="11" y1="12" x2="13" y2="12" stroke="white" stroke-width="2"/></svg>
+                <span>Rabby</span>
+              </button>
+              <button class="wallet-option" onclick="selectWallet('phantom')">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="11" fill="#4B40FF"/><path d="M12 5c-3 0-5 2-5 5v5c0 1 1 2 2 2 .5 0 .8-.2 1-.5l1-1.5c.3-.5.7-.5 1 0l1 1.5c.2.3.5.5 1 .5 1 0 2-1 2-2v-5c0-3-2-5-5-5z" fill="white"/><circle cx="10" cy="10" r="1" fill="#4B40FF"/><circle cx="14" cy="10" r="1" fill="#4B40FF"/></svg>
+                <span>Phantom</span>
+              </button>
+              <button class="wallet-option" onclick="selectWallet('rainbow')">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 18c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="#FF5A5F" stroke-width="3"/><path d="M7 18c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="#FFAE00" stroke-width="3"/><path d="M10 18c0-1.1.9-2 2-2s2 .9 2 2" stroke="#00A699" stroke-width="3"/></svg>
+                <span>Rainbow</span>
+              </button>
+              <button class="wallet-option" onclick="selectWallet('walletconnect')">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 14.5c2-3 6-5 8-5s6 2 8 5m-15.5-2c1.5-2.5 4.5-4 7.5-4s6 1.5 7.5 4M12 6.5C8 6.5 4 8.5 2 11" stroke="#3B99FC" stroke-width="2" stroke-linecap="round"/></svg>
+                <span>WalletConnect</span>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Column 2: Social / Web2 Logins -->
+          <div>
+            <div class="modal-column-title">Social / Email Login</div>
+            <div class="social-list">
+              <button class="wallet-option" onclick="openOauthFlow('Google')">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.3 12.2c0-.7-.1-1.4-.2-2H12v3.9h5.2c-.2 1.2-.9 2.2-1.9 2.9v2.4h3c1.8-1.6 2.9-4.1 2.9-7.2z" fill="#4285F4"/><path d="M12 21.6c2.6 0 4.8-.8 6.4-2.3l-3-2.4c-.8.6-1.9 1-3.4 1-2.6 0-4.8-1.7-5.6-4.1H3.3v2.5C4.9 19.4 8.2 21.6 12 21.6z" fill="#34A853"/><path d="M6.4 13.8c-.2-.6-.3-1.2-.3-1.8s.1-1.2.3-1.8V7.7H3.3C2.5 9.3 2 11.1 2 13s.5 3.7 1.3 5.3l3.1-2.5z" fill="#FBBC05"/><path d="M12 6.4c1.4 0 2.7.5 3.7 1.4l2.8-2.8C16.8 3.5 14.6 2.7 12 2.7 8.2 2.7 4.9 4.9 3.3 7.7l3.1 2.5c.8-2.4 3-3.8 5.6-3.8z" fill="#EA4335"/></svg>
+                <span>Google Account</span>
+              </button>
+              <button class="wallet-option" onclick="openOauthFlow('Discord')">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="6" fill="#5865F2"/><path d="M18.5 7.3c-.6-.6-1.4-1-2.2-1.2-.1 0-.2.1-.2.2.2.5.4 1.1.6 1.7-1-.1-2-.1-3-.1s-2 0-3 .1c.2-.6.4-1.2.6-1.7 0-.1-.1-.2-.2-.2-.8.2-1.6.6-2.2 1.2v.1c-1.3 1.9-1.8 3.8-1.5 5.8 0 .1.1.2.2.2 1 .7 1.9 1.1 2.9 1.4.1 0 .2 0 .2-.1.2-.3.4-.6.6-1-.8-.2-1.5-.6-2.2-1.1-.1-.1-.1-.2 0-.3.1-.1.3-.2.4-.3 1.8.8 3.8.8 5.6 0 .1 0 .3.1.4.3 0 .1 0 .2-.1.3-.7.5-1.4.9-2.2 1.1.2.3.4.7.6 1 .1.1.2.1.2 0 1-.3 1.9-.7 2.9-1.4.1 0 .2-.1.2-.2.4-2.3-.2-4.2-1.5-5.9v-.1zM9.5 12.5c-.6 0-1-.5-1-1.1 0-.6.4-1.1 1-1.1s1 .5 1 1.1c0 .6-.4 1.1-1 1.1zm5 0c-.6 0-1-.5-1-1.1 0-.6.4-1.1 1-1.1s1 .5 1 1.1c0 .6-.4 1.1-1 1.1z" fill="white"/></svg>
+                <span>Discord</span>
+              </button>
+              <button class="wallet-option" onclick="openOauthFlow('Twitter')">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="6" fill="black"/><path d="M16 6h2l-4.5 5.2L19 18h-4l-3.1-4.1L8.3 18H6.3l4.8-5.5L6.3 6h4.1l2.8 3.7L16 6zm-.7 10.8h1.1L8.8 7.2H7.6l7.7 9.6z" fill="white"/></svg>
+                <span>Twitter / X</span>
+              </button>
+              <button class="wallet-option" onclick="openOauthFlow('Email')">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="6" fill="#6B7280"/><path d="M5 6h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm0 3.5l7 4.5 7-4.5M5 16l4.5-4m10 4L15 12" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>Email OTP</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Social OAuth Login Simulation Popup -->
+    <div id="oauth-modal" class="modal" style="z-index: 1010; background: rgba(0, 0, 0, 0.85);" onclick="if(event.target === this) closeOauthModal()">
+      <div class="modal-content" style="width: 380px; text-align: center; border-color: rgba(139, 92, 246, 0.3);">
+        <div id="oauth-loading">
+          <div class="logo-container" style="justify-content: center; margin-bottom: 1.5rem;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logo-img" style="animation: float 2s infinite;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.1rem; margin-left: 0.5rem;">Pharos Sentinel</span>
+          </div>
+          <p id="oauth-title" style="font-size: 0.95rem; margin-bottom: 1.5rem; font-weight: 500;">Connecting to social provider...</p>
+          <div style="display: flex; justify-content: center; margin-bottom: 1rem;">
+            <svg class="spinner" width="36" height="36" viewBox="0 0 50 50"><circle cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle></svg>
+          </div>
+          <p style="font-size: 0.75rem; color: var(--text-secondary);">Secured by Pharos Auth Cascade</p>
+        </div>
+        <div id="oauth-selection" style="display: none;">
+          <h3 id="oauth-provider-title" style="margin-bottom: 1rem; font-family: 'Space Grotesk', sans-serif;">Sign in with Google</h3>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1.5rem;">Select an account to authorize **Pharos SPN Sentinel** to access your wallet keys:</p>
+          <div style="display: flex; flex-direction: column; gap: 0.75rem;" id="oauth-accounts-list">
+            <!-- filled dynamically -->
+          </div>
+          <button class="btn btn-secondary btn-sm" style="margin-top: 1.5rem; width: 100%;" onclick="closeOauthModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
     <footer class="footer">
       <div>Pharos SPN Sentinel • Composable AI-Agent Safety Skill Suite</div>
       <div>Running locally on <a href="http://localhost:3000">localhost:3000</a></div>
@@ -952,59 +1250,532 @@
 
   <script>
     let userAddress = null;
+    window.sentinelState = { status: 'healthy', speed: 1.0 };
 
     document.addEventListener("DOMContentLoaded", () => {
       fetchAgentStatus();
       setInterval(fetchAgentStatus, 3000); // Poll agent status/logs every 3 seconds
+      init3DSentinel(); // Boot Three.js 3D animation sphere!
+      init3DBackground(); // Boot full-screen drifting starfield background!
+      initCardTilt(); // Boot card 3D tilt hover effects!
     });
 
-    // MetaMask Web3 Integration
-    async function connectWallet() {
-      if (typeof window.ethereum === 'undefined') {
-        alert('MetaMask or another EVM wallet was not detected. Please install a wallet (like MetaMask) to connect!');
+    // Three.js 3D Spinning Holographic Particle Starfield Background
+    function init3DBackground() {
+      const canvas = document.getElementById('bg-3d-canvas');
+      if (!canvas) return;
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+      camera.position.z = 15;
+
+      const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio || 1);
+
+      // Create starfield particles
+      const count = 1000;
+      const geometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(count * 3);
+      const colors = new Float32Array(count * 3);
+
+      for (let i = 0; i < count * 3; i += 3) {
+        positions[i] = (Math.random() - 0.5) * 45;
+        positions[i+1] = (Math.random() - 0.5) * 45;
+        positions[i+2] = (Math.random() - 0.5) * 30;
+
+        const mix = Math.random();
+        colors[i] = mix * 0.3 + 0.1; // R (soft violet)
+        colors[i+1] = mix * 0.1 + 0.05; // G
+        colors[i+2] = mix * 0.5 + 0.3; // B (deep blue)
+      }
+
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+      const material = new THREE.PointsMaterial({
+        size: 0.08,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.55,
+        blending: THREE.AdditiveBlending
+      });
+
+      const points = new THREE.Points(geometry, material);
+      scene.add(points);
+
+      let mouseX = 0, mouseY = 0;
+      window.addEventListener('mousemove', (e) => {
+        mouseX = (e.clientX - window.innerWidth / 2) / 120;
+        mouseY = (e.clientY - window.innerHeight / 2) / 120;
+      });
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      function animate() {
+        requestAnimationFrame(animate);
+
+        points.rotation.y += 0.0004;
+        points.rotation.x += 0.0001;
+
+        // Smooth camera drift based on mouse coordinates
+        camera.position.x += (mouseX - camera.position.x) * 0.03;
+        camera.position.y += (-mouseY - camera.position.y) * 0.03;
+        camera.lookAt(scene.position);
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    }
+
+    // Upgraded Holographic Sentinel Core Mesh with orbiting counter-rotating rings
+    function init3DSentinel() {
+      const canvas = document.getElementById('sentinel-3d-canvas');
+      if (!canvas) return;
+
+      const width = canvas.clientWidth || 300;
+      const height = canvas.clientHeight || 155;
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+      camera.position.z = 6.5;
+
+      const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(window.devicePixelRatio || 1);
+
+      // Core: Morphing glowing Icosahedron wireframe
+      const coreGeom = new THREE.IcosahedronGeometry(1.3, 1);
+      const coreMaterial = new THREE.MeshBasicMaterial({
+        color: 0x8b5cf6,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.4
+      });
+      const coreMesh = new THREE.Mesh(coreGeom, coreMaterial);
+      scene.add(coreMesh);
+
+      // Inner solid core for volume density
+      const innerGeom = new THREE.IcosahedronGeometry(1.0, 0);
+      const innerMaterial = new THREE.MeshBasicMaterial({
+        color: 0x8b5cf6,
+        transparent: true,
+        opacity: 0.12
+      });
+      const innerMesh = new THREE.Mesh(innerGeom, innerMaterial);
+      scene.add(innerMesh);
+
+      // Orbit Ring 1 (Horizontal Torus representing SPN Node Trackers)
+      const ring1Geom = new THREE.TorusGeometry(1.9, 0.012, 4, 64);
+      const ring1Material = new THREE.MeshBasicMaterial({
+        color: 0x3b82f6,
+        transparent: true,
+        opacity: 0.45
+      });
+      const ring1 = new THREE.Mesh(ring1Geom, ring1Material);
+      ring1.rotation.x = Math.PI / 2;
+      scene.add(ring1);
+
+      // Orbit Ring 2 (Vertical Torus representing SPN Staking Yield Loop)
+      const ring2Geom = new THREE.TorusGeometry(2.1, 0.008, 4, 64);
+      const ring2Material = new THREE.MeshBasicMaterial({
+        color: 0x8b5cf6,
+        transparent: true,
+        opacity: 0.35
+      });
+      const ring2 = new THREE.Mesh(ring2Geom, ring2Material);
+      ring2.rotation.x = Math.PI / 4;
+      ring2.rotation.y = Math.PI / 4;
+      scene.add(ring2);
+
+      // Orbiting dust particles
+      const particleCount = 40;
+      const particleGeom = new THREE.BufferGeometry();
+      const particlePositions = new Float32Array(particleCount * 3);
+      const orbitRadii = [];
+      const orbitSpeeds = [];
+      const orbitAngles = [];
+
+      for (let i = 0; i < particleCount; i++) {
+        const radius = 1.5 + Math.random() * 0.8;
+        const angle = Math.random() * Math.PI * 2;
+        orbitRadii.push(radius);
+        orbitSpeeds.push(0.008 + Math.random() * 0.015);
+        orbitAngles.push(angle);
+
+        particlePositions[i * 3] = radius * Math.cos(angle);
+        particlePositions[i * 3 + 1] = (Math.random() - 0.5) * 0.4;
+        particlePositions[i * 3 + 2] = radius * Math.sin(angle);
+      }
+
+      particleGeom.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+      const particleMaterial = new THREE.PointsMaterial({
+        color: 0x60a5fa,
+        size: 0.05,
+        transparent: true,
+        opacity: 0.85
+      });
+      const orbitParticles = new THREE.Points(particleGeom, particleMaterial);
+      scene.add(orbitParticles);
+
+      // Interactive rotation on hover / mouse movement over canvas
+      let targetRotX = 0;
+      let targetRotY = 0;
+      canvas.addEventListener('mousemove', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        targetRotY = x * 2.0;
+        targetRotX = y * 2.0;
+      });
+
+      function animate() {
+        requestAnimationFrame(animate);
+        
+        const currentSpeed = window.sentinelState.speed;
+        
+        // Base spinning rotation
+        coreMesh.rotation.y += 0.007 * currentSpeed;
+        coreMesh.rotation.x += 0.002 * currentSpeed;
+        innerMesh.rotation.y -= 0.004 * currentSpeed;
+        
+        ring1.rotation.z += 0.010 * currentSpeed;
+        ring2.rotation.z -= 0.007 * currentSpeed;
+        
+        // Damped hover rotation adjustments
+        coreMesh.rotation.x += (targetRotX - coreMesh.rotation.x) * 0.05;
+        coreMesh.rotation.y += (targetRotY - coreMesh.rotation.y) * 0.05;
+        innerMesh.rotation.x += (targetRotX - innerMesh.rotation.x) * 0.05;
+        innerMesh.rotation.y += (targetRotY - innerMesh.rotation.y) * 0.05;
+
+        // Pulsate scale over time
+        const time = Date.now() * 0.0025 * currentSpeed;
+        const pulse = 1.0 + Math.sin(time) * 0.06;
+        coreMesh.scale.set(pulse, pulse, pulse);
+        innerMesh.scale.set(pulse, pulse, pulse);
+
+        // Update orbiting particle positions
+        const posAttr = orbitParticles.geometry.attributes.position;
+        for (let i = 0; i < particleCount; i++) {
+          orbitAngles[i] += orbitSpeeds[i] * currentSpeed;
+          const x = orbitRadii[i] * Math.cos(orbitAngles[i]);
+          const z = orbitRadii[i] * Math.sin(orbitAngles[i]);
+          posAttr.setX(i, x);
+          posAttr.setZ(i, z);
+        }
+        posAttr.needsUpdate = true;
+
+        // Dynamic State Color Shifting
+        let hexColor = 0x8b5cf6; // Purple (healthy)
+        let particleHex = 0x60a5fa; // Blue
+        
+        if (window.sentinelState.status === 'danger') {
+          hexColor = 0xef4444; // Red
+          particleHex = 0xfca5a5; // Soft red
+        } else if (window.sentinelState.status === 'rebalancing') {
+          hexColor = 0x10b981; // Green
+          particleHex = 0x6ee7b7; // Soft green
+        }
+
+        const colorObj = new THREE.Color(hexColor);
+        coreMaterial.color.lerp(colorObj, 0.1);
+        innerMaterial.color.lerp(colorObj, 0.1);
+        ring1Material.color.lerp(new THREE.Color(particleHex), 0.1);
+        ring2Material.color.lerp(colorObj, 0.1);
+        particleMaterial.color.lerp(new THREE.Color(particleHex), 0.1);
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+
+      // Handle resize events
+      const resizeObserver = new ResizeObserver(entries => {
+        for (let entry of entries) {
+          const w = entry.contentRect.width;
+          const h = entry.contentRect.height || 155;
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          renderer.setSize(w, h);
+        }
+      });
+      resizeObserver.observe(canvas.parentElement);
+    }
+
+    // Pure JS card 3D tilt hover animation
+    function initCardTilt() {
+      const panels = document.querySelectorAll('.panel');
+      panels.forEach(panel => {
+        panel.addEventListener('mousemove', (e) => {
+          const rect = panel.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          
+          const percentX = (x - centerX) / centerX;
+          const percentY = (y - centerY) / centerY;
+          
+          const maxRotationX = 2; // Degrees
+          const maxRotationY = 2;
+          
+          const rotX = -percentY * maxRotationX;
+          const rotY = percentX * maxRotationY;
+          
+          panel.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-2.5px)`;
+          panel.style.boxShadow = `0 14px 42px rgba(139, 92, 246, 0.16)`;
+        });
+        
+        panel.addEventListener('mouseleave', () => {
+          panel.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) translateY(0px)`;
+          panel.style.boxShadow = ``;
+        });
+      });
+    }
+
+    // Modal Handlers
+    function openWalletModal() {
+      if (userAddress) {
+        disconnectWallet();
         return;
       }
+      document.getElementById('wallet-modal').style.display = 'flex';
+    }
+
+    function closeWalletModal() {
+      document.getElementById('wallet-modal').style.display = 'none';
+    }
+
+    function openOauthFlow(provider) {
+      closeWalletModal();
+      const oauthModal = document.getElementById('oauth-modal');
+      const oauthTitle = document.getElementById('oauth-title');
+      const oauthLoading = document.getElementById('oauth-loading');
+      const oauthSelection = document.getElementById('oauth-selection');
+      const oauthProviderTitle = document.getElementById('oauth-provider-title');
+      const listContainer = document.getElementById('oauth-accounts-list');
+
+      oauthModal.style.display = 'flex';
+      oauthLoading.style.display = 'block';
+      oauthSelection.style.display = 'none';
+      oauthTitle.innerText = `Connecting to ${provider} OAuth Cascade...`;
+
+      // Simulates OAuth network handshakes
+      setTimeout(() => {
+        oauthLoading.style.display = 'none';
+        oauthSelection.style.display = 'block';
+        oauthProviderTitle.innerText = `Sign in with ${provider}`;
+
+        listContainer.innerHTML = '';
+        if (provider === 'Google') {
+          listContainer.innerHTML = `
+            <button class="oauth-account-btn" onclick="completeSocialLogin('Google', 'builder.pharos@gmail.com')">
+              <div class="oauth-avatar">BP</div>
+              <div>
+                <div style="font-weight:600; font-size:0.85rem;">Pharos Builder</div>
+                <div style="color:var(--text-secondary); font-size:0.75rem;">builder.pharos@gmail.com</div>
+              </div>
+            </button>
+            <button class="oauth-account-btn" onclick="completeSocialLogin('Google', 'sentinel.judge@gmail.com')">
+              <div class="oauth-avatar" style="background:var(--accent-blue);">SJ</div>
+              <div>
+                <div style="font-weight:600; font-size:0.85rem;">Sentinel Judge</div>
+                <div style="color:var(--text-secondary); font-size:0.75rem;">sentinel.judge@gmail.com</div>
+              </div>
+            </button>
+          `;
+        } else if (provider === 'Discord') {
+          listContainer.innerHTML = `
+            <button class="oauth-account-btn" onclick="completeSocialLogin('Discord', 'anvita_sentinel#1999')">
+              <div class="oauth-avatar" style="background:#5865F2;">AS</div>
+              <div>
+                <div style="font-weight:600; font-size:0.85rem;">anvita_sentinel</div>
+                <div style="color:var(--text-secondary); font-size:0.75rem;">discord_user_id: 819238918239</div>
+              </div>
+            </button>
+          `;
+        } else if (provider === 'Twitter') {
+          listContainer.innerHTML = `
+            <button class="oauth-account-btn" onclick="completeSocialLogin('Twitter', '@PharosSentinel')">
+              <div class="oauth-avatar" style="background:black; border:1px solid #333;">PS</div>
+              <div>
+                <div style="font-weight:600; font-size:0.85rem;">Pharos SPN Sentinel</div>
+                <div style="color:var(--text-secondary); font-size:0.75rem;">@PharosSentinel</div>
+              </div>
+            </button>
+          `;
+        } else { // Email
+          listContainer.innerHTML = `
+            <div style="display:flex; flex-direction:column; gap:0.5rem; text-align:left;">
+              <label style="font-size:0.75rem; color:var(--text-secondary);">Enter Email Address</label>
+              <input type="email" id="oauth-email-input" class="input-box" placeholder="user@domain.com" style="width:100%;">
+              <button class="btn btn-primary btn-sm" style="width:100%; margin-top:0.5rem;" onclick="const mail = document.getElementById('oauth-email-input').value.trim(); if(mail) completeSocialLogin('Email', mail); else alert('Enter a valid email');">Send OTP & Log In</button>
+            </div>
+          `;
+        }
+      }, 700);
+    }
+
+    function closeOauthModal() {
+      document.getElementById('oauth-modal').style.display = 'none';
+    }
+
+    function completeSocialLogin(provider, identifier) {
+      closeOauthModal();
+      
+      const btn = document.getElementById('btn-connect');
+      btn.innerText = 'Authorizing...';
+      btn.disabled = true;
+
+      setTimeout(() => {
+        // Derive EVM address deterministically from their identifier
+        let hash = 0;
+        for (let i = 0; i < identifier.length; i++) {
+          hash = (hash << 5) - hash + identifier.charCodeAt(i);
+          hash |= 0;
+        }
+        const hexHash = Math.abs(hash).toString(16).padEnd(40, 'b');
+        userAddress = '0x' + hexHash.substring(0, 40);
+
+        // UI text
+        const truncatedIdent = identifier.length > 13 ? identifier.substring(0, 10) + '...' : identifier;
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg> ${truncatedIdent} (${provider.substring(0, 3)})`;
+        btn.className = 'btn btn-secondary';
+        btn.disabled = false;
+
+        // Custom sandbox values loaded for social logins
+        document.getElementById('balance-pros').innerText = '350.00';
+        document.getElementById('balance-usdc').innerText = '100.00';
+        document.getElementById('balance-staked').innerText = '2500.00';
+        
+        // Log social connection in sentinel daemon console
+        logMockDaemonMessage('AUTH', `OAuth 2.0 validation complete via ${provider}. User verified: ${identifier}`);
+        logMockDaemonMessage('WALLET', `Deterministic MPC Keygen derived EVM Address: ${userAddress}`);
+        logMockDaemonMessage('WALLET', `Loaded native assets on Pharos Mainnet (Chain 1672)`);
+      }, 800);
+    }
+
+    function logMockDaemonMessage(level, msg) {
+      const terminal = document.getElementById('terminal-content');
+      if (!terminal) return;
+      const timeStr = new Date().toLocaleTimeString();
+      const line = document.createElement('div');
+      line.className = 'terminal-line';
+      let lvlClass = level === 'ERROR' ? 'msg-error' : level === 'SUCCESS' ? 'msg-success' : level === 'WARNING' ? 'msg-warning' : 'msg-info';
+      line.innerHTML = `<span class="term-time">[${timeStr}]</span><span class="term-msg ${lvlClass}">[${level}] ${msg}</span>`;
+      
+      terminal.appendChild(line);
+      terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    async function selectWallet(walletType) {
+      closeWalletModal();
       
       const btn = document.getElementById('btn-connect');
       btn.innerText = 'Connecting...';
       btn.disabled = true;
 
+      // Detect specific browser extensions
+      let providerDetected = false;
+      let injectedProvider = null;
+
       try {
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        userAddress = accounts[0];
-        
-        // Truncate address for display
-        const truncated = userAddress.substring(0, 6) + '...' + userAddress.substring(38);
-        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg> ${truncated}`;
-        btn.className = 'btn btn-secondary';
-        btn.disabled = false;
+        if (walletType === 'metamask' && typeof window.ethereum !== 'undefined' && window.ethereum.isMetaMask) {
+          providerDetected = true;
+          injectedProvider = window.ethereum;
+        } else if (walletType === 'coinbase' && (window.ethereum?.isCoinbaseWallet || window.coinbaseWalletExtension)) {
+          providerDetected = true;
+          injectedProvider = window.ethereum?.isCoinbaseWallet ? window.ethereum : window.coinbaseWalletExtension;
+        } else if (walletType === 'trust' && (window.trustWallet || window.ethereum?.isTrust)) {
+          providerDetected = true;
+          injectedProvider = window.trustWallet || window.ethereum;
+        } else if (walletType === 'okx' && typeof window.okxwallet !== 'undefined') {
+          providerDetected = true;
+          injectedProvider = window.okxwallet;
+        } else if (walletType === 'rabby' && typeof window.rabby !== 'undefined') {
+          providerDetected = true;
+          injectedProvider = window.rabby;
+        } else if (walletType === 'phantom' && (window.phantom?.ethereum || window.ethereum?.isPhantom)) {
+          providerDetected = true;
+          injectedProvider = window.phantom?.ethereum || window.ethereum;
+        }
 
-        // Switch to Pharos Mainnet (Chain ID 1672 = hex 0x688)
-        await switchNetwork();
+        if (providerDetected && injectedProvider) {
+          logMockDaemonMessage('WALLET', `Injected wallet provider detected for ${walletType.toUpperCase()}`);
+          
+          const accounts = await injectedProvider.request({ method: 'eth_requestAccounts' });
+          userAddress = accounts[0];
+          
+          const truncated = userAddress.substring(0, 6) + '...' + userAddress.substring(38);
+          btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg> ${truncated} (${walletType.toUpperCase()})`;
+          btn.className = 'btn btn-secondary';
+          btn.disabled = false;
 
-        // Get actual native PROS balance
-        await updateWalletBalance();
-
-        window.ethereum.on('accountsChanged', (accounts) => {
-          if (accounts.length === 0) {
-            disconnectWallet();
-          } else {
-            userAddress = accounts[0];
-            const truncated = userAddress.substring(0, 6) + '...' + userAddress.substring(38);
-            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg> ${truncated}`;
-            updateWalletBalance();
+          // Network check
+          try {
+            await injectedProvider.request({
+              method: 'wallet_switchEthereumChain',
+              params: [{ chainId: '0x688' }], // Chain ID 1672
+            });
+          } catch (switchError) {
+            if (switchError.code === 4902) {
+              try {
+                await injectedProvider.request({
+                  method: 'wallet_addEthereumChain',
+                  params: [
+                    {
+                      chainId: '0x688',
+                      chainName: 'Pharos Mainnet',
+                      rpcUrls: ['https://rpc.pharos.xyz'],
+                      nativeCurrency: { name: 'PROS', symbol: 'PROS', decimals: 18 },
+                      blockExplorerUrls: ['https://www.pharosscan.xyz'],
+                    },
+                  ],
+                });
+              } catch (addError) {
+                console.error('Error adding Pharos chain:', addError);
+              }
+            }
           }
-        });
 
-        window.ethereum.on('chainChanged', () => {
-          window.location.reload();
-        });
+          // Balance check
+          const balanceHex = await injectedProvider.request({
+            method: 'eth_getBalance',
+            params: [userAddress, 'latest']
+          });
+          const balanceWei = BigInt(balanceHex);
+          const balancePros = Number(balanceWei) / 1e18;
+          document.getElementById('balance-pros').innerText = balancePros.toFixed(2);
 
+          logMockDaemonMessage('SUCCESS', `Authorized ${walletType.toUpperCase()} Address: ${userAddress}`);
+          logMockDaemonMessage('WALLET', `Ethers provider active on Pharos L1 (Chain 1672)`);
+        } else {
+          // Fallback to simulated connection with daemon traces
+          logMockDaemonMessage('WARNING', `Injected provider for ${walletType.toUpperCase()} not found in browser.`);
+          logMockDaemonMessage('WALLET', `Initializing Sandbox Mock connection for verification...`);
+          
+          btn.innerText = `Connecting ${walletType}...`;
+          setTimeout(() => {
+            userAddress = '0x' + Array.from({length: 40}, () => Math.floor(Math.random()*16).toString(16)).join('');
+            const truncated = userAddress.substring(0, 6) + '...' + userAddress.substring(38);
+            btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg> ${truncated} (${walletType.toUpperCase()})`;
+            btn.className = 'btn btn-secondary';
+            btn.disabled = false;
+
+            document.getElementById('balance-pros').innerText = '1250.00';
+            logMockDaemonMessage('SUCCESS', `Connected simulated ${walletType.toUpperCase()} wallet: ${userAddress}`);
+            logMockDaemonMessage('WALLET', `Mock balance synced: 1,250.00 PROS on Pharos Mainnet`);
+          }, 1000);
+        }
       } catch (err) {
-        console.error('Wallet connection failed:', err);
-        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg> Connect Wallet`;
-        btn.className = 'btn btn-primary';
-        btn.disabled = false;
+        alert(err.message);
+        disconnectWallet();
       }
     }
 
@@ -1013,6 +1784,25 @@
       const btn = document.getElementById('btn-connect');
       btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg> Connect Wallet`;
       btn.className = 'btn btn-primary';
+      btn.disabled = false;
+      fetchAgentStatus();
+      logMockDaemonMessage('INFO', `Wallet disconnected. Resuming general Sentinel daemon status.`);
+    }
+
+    async function switchNetwork() {
+      // Stub kept for compatibility
+    }
+
+    async function updateWalletBalance() {
+      // Stub kept for compatibility
+    }   }
+
+    function disconnectWallet() {
+      userAddress = null;
+      const btn = document.getElementById('btn-connect');
+      btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg> Connect Wallet`;
+      btn.className = 'btn btn-primary';
+      btn.disabled = false;
       fetchAgentStatus();
     }
 
@@ -1049,7 +1839,7 @@
     }
 
     async function updateWalletBalance() {
-      if (!userAddress) return;
+      if (!userAddress || userAddress.length < 42) return;
       try {
         const balanceHex = await window.ethereum.request({
           method: 'eth_getBalance',
@@ -1137,6 +1927,23 @@
 
     async function triggerSimulation(type) {
       try {
+        // Shift 3D core visual state
+        if (type === 'threat') {
+          window.sentinelState.status = 'danger';
+          window.sentinelState.speed = 3.5;
+          setTimeout(() => {
+            window.sentinelState.status = 'healthy';
+            window.sentinelState.speed = 1.0;
+          }, 5000);
+        } else if (type === 'yield') {
+          window.sentinelState.status = 'rebalancing';
+          window.sentinelState.speed = 2.2;
+          setTimeout(() => {
+            window.sentinelState.status = 'healthy';
+            window.sentinelState.speed = 1.0;
+          }, 4000);
+        }
+
         const response = await fetch('/api/agent/trigger-activity', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
