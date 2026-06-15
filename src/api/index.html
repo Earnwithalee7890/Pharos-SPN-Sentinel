@@ -982,15 +982,15 @@
           <div class="stats-grid">
             <div class="stat-box">
               <div class="stat-label">Idle PROS</div>
-              <div class="stat-value value-pros" id="balance-pros">1250.00</div>
+              <div class="stat-value value-pros" id="balance-pros">0.00</div>
             </div>
             <div class="stat-box">
               <div class="stat-label">Staked PROS</div>
-              <div class="stat-value value-staked" id="balance-staked">5000.00</div>
+              <div class="stat-value value-staked" id="balance-staked">0.00</div>
             </div>
             <div class="stat-box">
               <div class="stat-label">USDC Balance</div>
-              <div class="stat-value value-usdc" id="balance-usdc">250.00</div>
+              <div class="stat-value value-usdc" id="balance-usdc">0.00</div>
             </div>
             <div class="stat-box">
               <div class="stat-label">SHIELD (Risky)</div>
@@ -1000,7 +1000,7 @@
           <div class="staking-summary">
             <div>
               <span style="color: var(--text-secondary); font-size: 0.75rem; text-transform: uppercase;">Active Yield Node</span>
-              <div style="font-weight: 600; font-size: 0.85rem;" id="staking-validator">0x51b11...f015</div>
+              <div style="font-weight: 600; font-size: 0.85rem;" id="staking-validator">Not Configured</div>
             </div>
             <div style="text-align: right;">
               <span class="badge badge-success">5.8% APY</span>
@@ -1280,8 +1280,11 @@
         document.getElementById('balance-shield').innerText = data.wallet.shieldBalance.toFixed(2);
         
         // Staking details
+        const validator = data.wallet.delegatedValidator;
         document.getElementById('staking-validator').innerText = 
-          data.wallet.delegatedValidator.substring(0, 7) + '...' + data.wallet.delegatedValidator.substring(37);
+          (validator === '0x0000000000000000000000000000000000000000' || validator === 'None') 
+          ? 'Not Configured' 
+          : validator.substring(0, 7) + '...' + validator.substring(37);
 
         // Update Terminal Logs
         const terminal = document.getElementById('terminal-content');

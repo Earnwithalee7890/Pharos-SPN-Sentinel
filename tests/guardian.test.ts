@@ -30,11 +30,12 @@ describe('Pharos Guardian Agent Service Tests', () => {
     agent = GuardianAgent.getInstance();
     // Stop loops to avoid background intervals running during tests
     agent.stopAutonomousLoop();
-    // Reset agent balances for clean test runs
-    agent.wallet.prosBalance = 1250.00;
-    agent.wallet.usdcBalance = 250.00;
+    // Reset agent balances for clean test runs (defaulting to 0)
+    agent.wallet.prosBalance = 0.00;
+    agent.wallet.usdcBalance = 0.00;
     agent.wallet.shieldBalance = 0.00;
-    agent.wallet.stakedPros = 5000.00;
+    agent.wallet.stakedPros = 0.00;
+    agent.wallet.address = '0x0000000000000000000000000000000000000000';
     agent.logs = [];
     agent.transactions = [];
   });
@@ -42,9 +43,9 @@ describe('Pharos Guardian Agent Service Tests', () => {
   it('should initialize with default states', () => {
     expect(agent.autoDefend).toBe(true);
     expect(agent.autoStake).toBe(true);
-    expect(agent.wallet.prosBalance).toBe(1250.00);
-    expect(agent.wallet.usdcBalance).toBe(250.00);
-    expect(agent.wallet.stakedPros).toBe(5000.00);
+    expect(agent.wallet.prosBalance).toBe(0.00);
+    expect(agent.wallet.usdcBalance).toBe(0.00);
+    expect(agent.wallet.stakedPros).toBe(0.00);
   });
 
   it('should toggle agent features', () => {
@@ -69,7 +70,8 @@ describe('Pharos Guardian Agent Service Tests', () => {
       maxPriorityFeePerGas: parseUnits('1.5', 'gwei'),
     });
 
-    // Setup malicious token balance
+    // Setup malicious token balance and initial USDC balance
+    agent.wallet.usdcBalance = 250.00;
     agent.wallet.shieldBalance = 500.00;
 
     // Trigger auto defend check
@@ -136,6 +138,10 @@ describe('Pharos Guardian Agent Service Tests', () => {
       maxPriorityFeePerGas: parseUnits('1.5', 'gwei'),
     });
 
+    // Setup balances for test
+    agent.wallet.prosBalance = 1250.00;
+    agent.wallet.stakedPros = 5000.00;
+
     // Trigger yield optimizer rebalance
     await agent.runYieldOptimization();
 
@@ -151,6 +157,10 @@ describe('Pharos Guardian Agent Service Tests', () => {
   });
 
   it('should parse natural language queries in chat', async () => {
+    // Setup balances for test
+    agent.wallet.address = '0x51b111109964d9eb43da7a7dc6d0917d551fb015';
+    agent.wallet.prosBalance = 1250.00;
+
     // 1. Wallet status query
     let reply = await agent.chat('show my wallet status please');
     expect(reply).toContain('Active Wallet');

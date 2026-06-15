@@ -39,12 +39,12 @@ export class GuardianAgent {
   public autoStake = true;
 
   public wallet: AgentWallet = {
-    address: '0x51b111109964d9eb43da7a7dc6d0917d551fb015',
-    prosBalance: 1250.00,
-    usdcBalance: 250.00,
-    shieldBalance: 0.00, // Starts at 0. Simulate incoming threat to see auto-defend!
-    stakedPros: 5000.00,
-    delegatedValidator: '0x51b111109964d9eb43da7a7dc6d0917d551fb015'
+    address: '0x0000000000000000000000000000000000000000',
+    prosBalance: 0.00,
+    usdcBalance: 0.00,
+    shieldBalance: 0.00,
+    stakedPros: 0.00,
+    delegatedValidator: '0x0000000000000000000000000000000000000000'
   };
 
   public logs: AgentLog[] = [];
