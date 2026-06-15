@@ -186,11 +186,11 @@ const swaggerDocument = {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'index.html'));
+  res.sendFile(path.join(process.cwd(), 'src', 'api', 'index.html'));
 });
 
 app.get('/logo.png', (req, res) => {
-  res.sendFile(path.join(__dirname, 'logo.png'));
+  res.sendFile(path.join(process.cwd(), 'src', 'api', 'logo.png'));
 });
 
 app.get('/api/audit-token', async (req, res) => {
@@ -291,7 +291,11 @@ app.post('/api/agent/trigger-activity', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 PharosSPNSentinel API running on http://localhost:${PORT}`);
-  console.log(`📚 Swagger UI available at http://localhost:${PORT}/api-docs`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 PharosSPNSentinel API running on http://localhost:${PORT}`);
+    console.log(`📚 Swagger UI available at http://localhost:${PORT}/api-docs`);
+  });
+}
+
+export default app;
