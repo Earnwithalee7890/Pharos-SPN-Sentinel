@@ -724,6 +724,143 @@
       from { opacity: 0; }
       to { opacity: 1; }
     }
+
+    /* Modal overlay and content */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 8, 20, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: text-appear 0.25s ease;
+    }
+    .modal-content {
+      background: rgba(18, 14, 36, 0.95);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      width: 100%;
+      max-width: 440px;
+      padding: 1.75rem;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(139, 92, 246, 0.15);
+      position: relative;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .modal-header h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.75rem;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .modal-close:hover {
+      color: #fff;
+    }
+    .wallet-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .wallet-option {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.85rem 1.25rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.25s;
+      text-align: left;
+      width: 100%;
+      color: var(--text-primary);
+    }
+    .wallet-option:hover {
+      background: rgba(139, 92, 246, 0.1);
+      border-color: rgba(139, 92, 246, 0.3);
+      transform: translateY(-2px);
+    }
+    .wallet-option img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+    }
+    .pharos-logo-wallet {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-blue));
+      border-radius: 50%;
+      font-size: 1.25rem;
+    }
+    .wallet-info {
+      display: flex;
+      flex-direction: column;
+    }
+    .wallet-name {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+    .wallet-status {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    /* Ledger styles */
+    .ledger-panel {
+      display: flex;
+      flex-direction: column;
+    }
+    .ledger-table-wrapper {
+      overflow-x: auto;
+      margin-top: 0.75rem;
+      max-height: 220px;
+    }
+    .ledger-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.8rem;
+    }
+    .ledger-table th, .ledger-table td {
+      padding: 0.6rem 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .ledger-table th {
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.7rem;
+      letter-spacing: 0.5px;
+    }
+    .ledger-table tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+    .ledger-table td a {
+      color: var(--accent-purple);
+      text-decoration: none;
+    }
+    .ledger-table td a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -738,7 +875,12 @@
       </div>
       <div class="header-links">
         <a href="/api-docs" target="_blank" class="btn btn-secondary">📚 API Swagger Docs</a>
-        <a href="https://github.com/PharosNetwork" target="_blank" class="btn btn-secondary">🌐 Pharos GitHub</a>
+        <button id="connect-wallet-btn" class="btn btn-primary" onclick="openWalletModal()">🔌 Connect Wallet</button>
+        <div id="wallet-connected-info" style="display: none; align-items: center; gap: 0.75rem;">
+          <span id="network-badge" class="badge badge-warning" style="cursor: pointer;" onclick="switchToPharosMainnet()">Switch to Pharos</span>
+          <span id="wallet-address" style="font-family: 'Fira Code', monospace; font-size: 0.85rem; color: var(--accent-purple); border: 1px solid var(--border-color); padding: 0.4rem 0.75rem; border-radius: 6px; background: rgba(0,0,0,0.2);">0x...</span>
+          <button class="btn btn-secondary btn-sm" onclick="disconnectWallet()">Disconnect</button>
+        </div>
       </div>
     </header>
 
@@ -773,6 +915,37 @@
           <div class="terminal-content" id="terminal-content">
             <!-- Dynamic lines -->
             <div class="terminal-line"><span class="term-time">[--:--:--]</span><span class="term-msg msg-info">Daemon listener booting...</span></div>
+          </div>
+        </section>
+
+        <!-- Live Transaction Ledger -->
+        <section class="panel ledger-panel" style="margin-top: 1.5rem;">
+          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div>
+              <span class="panel-title" style="color: var(--accent-green);">📋 Broadcasted Transaction Ledger</span>
+              <span class="panel-subtitle">On-Chain Transactions & Wallet Operations</span>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="clearLedger()" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;">Clear</button>
+          </div>
+          <div class="ledger-table-wrapper">
+            <table class="ledger-table">
+              <thead>
+                <tr>
+                  <th>Time</th>
+                  <th>Action</th>
+                  <th>Description</th>
+                  <th>Tx Hash</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="ledger-body">
+                <tr>
+                  <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 1.5rem 0; font-size: 0.8rem;">
+                    No transactions recorded in this session.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </section>
       </div>
@@ -836,6 +1009,32 @@
           </div>
         </section>
 
+        <!-- Pharos Network Integration Panel -->
+        <section class="panel network-panel">
+          <div class="panel-header" style="display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 0.25rem;">
+            <div>
+              <span class="panel-title" style="color: var(--accent-blue);"><span class="icon">🔗</span> Pharos Network Details</span>
+              <span class="panel-subtitle">Chain Parameters & Integration</span>
+            </div>
+            <button class="btn btn-secondary btn-sm" onclick="switchToPharosMainnet()" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Add Network</button>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.75rem; margin-top: 0.25rem;">
+            Configure your web3 wallet to interact with the Pharos Special Processing Networks (SPNs).
+          </div>
+          <div class="network-details-grid" style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 0.4rem; font-size: 0.75rem; background: rgba(0,0,0,0.15); padding: 0.6rem; border-radius: 6px; border: 1px solid rgba(255,255,255,0.03);">
+            <div style="color: var(--text-secondary);">Network Name:</div>
+            <div style="font-weight: 600;">Pharos Mainnet</div>
+            <div style="color: var(--text-secondary);">RPC URL:</div>
+            <div style="font-family: monospace; font-size: 0.7rem; color: var(--accent-purple);">https://rpc.pharos.xyz</div>
+            <div style="color: var(--text-secondary);">Chain ID:</div>
+            <div style="font-weight: 600;">1672 (0x688)</div>
+            <div style="color: var(--text-secondary);">Currency Symbol:</div>
+            <div style="font-weight: 600;">PROS</div>
+            <div style="color: var(--text-secondary);">Block Explorer:</div>
+            <div><a href="https://scan.pharos.xyz" target="_blank" style="color: var(--accent-purple); text-decoration: none;">scan.pharos.xyz ↗</a></div>
+          </div>
+        </section>
+
         <!-- Simulation Control Panel -->
         <section class="panel simulation-area">
           <div class="sim-header">
@@ -849,6 +1048,22 @@
             <button class="btn btn-danger btn-sm" onclick="triggerSimulation('threat')">☣️ Simulate Threat Attack</button>
             <button class="btn btn-secondary btn-sm" onclick="triggerSimulation('yield')">💸 Trigger Stake Check</button>
           </div>
+        </section>
+
+        <!-- Tip Dev Panel -->
+        <section class="panel tip-panel">
+          <div class="panel-header">
+            <span class="panel-title" style="color: var(--accent-purple);"><span class="icon">🎁</span> Support the Sentinel</span>
+            <span class="panel-subtitle">Tip Developer</span>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.75rem; margin-top: 0.25rem;">
+            Send native `PROS` to support the development and hosting of Pharos SPN Sentinel.
+          </div>
+          <div class="input-group">
+            <input type="number" class="input-box" id="tip-amount" placeholder="Amount (PROS)" value="10.0" step="1.0" min="0.1" style="width: 55%;">
+            <button class="btn btn-primary btn-sm" onclick="sendTip()" style="width: 40%;">Tip dev</button>
+          </div>
+          <div id="tip-status" style="font-size: 0.75rem; color: var(--text-secondary); margin-top: 0.5rem; display: none; line-height: 1.4;"></div>
         </section>
 
         <!-- Accordion Utility Tools -->
@@ -927,13 +1142,89 @@
 
     <footer class="footer">
       <div>Pharos SPN Sentinel • Composable AI-Agent Safety Skill Suite</div>
-      <div>Running locally on <a href="http://localhost:3000">localhost:3000</a></div>
+      <div>DoraHacks Hackathon Edition 🛡️</div>
     </footer>
+  </div>
+
+  <!-- Wallet Connection Modal -->
+  <div id="wallet-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Connect Wallet</h3>
+        <button class="modal-close" onclick="closeWalletModal()">&times;</button>
+      </div>
+      <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.25rem; line-height: 1.4;">
+        Select your wallet from the options below to connect to Pharos SPN Sentinel.
+      </p>
+      <div class="wallet-options">
+        <button class="wallet-option" onclick="connectWalletProvider('metamask')">
+          <img src="https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg" alt="MetaMask">
+          <div class="wallet-info">
+            <span class="wallet-name">MetaMask</span>
+            <span class="wallet-status">Popular Web3 Extension</span>
+          </div>
+        </button>
+        <button class="wallet-option" onclick="connectWalletProvider('pharos')">
+          <div class="pharos-logo-wallet">🌀</div>
+          <div class="wallet-info">
+            <span class="wallet-name">Pharos Wallet</span>
+            <span class="wallet-status">Native L1 Wallet</span>
+          </div>
+        </button>
+        <button class="wallet-option" onclick="connectWalletProvider('walletconnect')">
+          <img src="https://raw.githubusercontent.com/WalletConnect/walletconnect-assets/master/svg/original/walletconnect-logo-blue.svg" alt="WalletConnect">
+          <div class="wallet-info">
+            <span class="wallet-name">WalletConnect</span>
+            <span class="wallet-status">Mobile QR Code Connect</span>
+          </div>
+        </button>
+        <button class="wallet-option" onclick="connectWalletProvider('coinbase')">
+          <img src="https://raw.githubusercontent.com/coinbase/coinbase-wallet-sdk/master/packages/wallet-sdk/assets/coinbase-logo.svg" alt="Coinbase Wallet" style="border-radius: 50%;">
+          <div class="wallet-info">
+            <span class="wallet-name">Coinbase Wallet</span>
+            <span class="wallet-status">Ecosystem Bridge</span>
+          </div>
+        </button>
+        <div style="border-top: 1px solid rgba(255,255,255,0.08); margin: 0.5rem 0; padding-top: 0.5rem;">
+          <button class="wallet-option" style="background: rgba(139, 92, 246, 0.1); border-color: rgba(139, 92, 246, 0.25);" onclick="connectWalletProvider('demo')">
+            <div class="pharos-logo-wallet" style="background: linear-gradient(135deg, var(--accent-green), var(--accent-blue));">🛠️</div>
+            <div class="wallet-info">
+              <span class="wallet-name" style="color: var(--accent-green);">Simulated Demo Mode</span>
+              <span class="wallet-status" style="color: var(--text-secondary);">Quick Test (No extension required)</span>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
     let logCount = 0;
     let knownLogTimestamps = new Set();
+
+    // Web3 Wallet connection states
+    let userAddress = null;
+    let isWalletConnected = false;
+    let currentChainId = null;
+    let localUserTransactions = [];
+
+    // Web3 event listeners
+    if (typeof window.ethereum !== 'undefined') {
+      window.ethereum.on('accountsChanged', (accounts) => {
+        if (accounts.length === 0) {
+          disconnectWallet();
+        } else {
+          userAddress = accounts[0];
+          isWalletConnected = true;
+          updateWalletUI();
+        }
+      });
+
+      window.ethereum.on('chainChanged', (chainIdHex) => {
+        currentChainId = parseInt(chainIdHex, 16);
+        updateWalletUI();
+      });
+    }
 
     document.addEventListener("DOMContentLoaded", () => {
       fetchAgentStatus();
@@ -990,6 +1281,58 @@
           terminal.scrollTop = terminal.scrollHeight;
         } else {
           terminal.innerHTML = '<div class="terminal-line"><span class="term-time">[--:--:--]</span><span class="term-msg msg-info">No logs recorded.</span></div>';
+        }
+
+        // Update Broadcasted Transaction Ledger
+        let allTxs = [];
+        if (data.transactions) {
+          allTxs = [...data.transactions];
+        }
+        // Merge in local wallet transactions
+        allTxs = [...localUserTransactions, ...allTxs];
+        // Sort descending by timestamp
+        allTxs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+        const ledgerBody = document.getElementById('ledger-body');
+        if (allTxs.length > 0) {
+          ledgerBody.innerHTML = '';
+          allTxs.forEach(tx => {
+            const timeStr = new Date(tx.timestamp).toLocaleTimeString();
+            const badgeClass = (tx.status === 'SUCCESS' || tx.status === 'Success') ? 'badge-success' : 
+                               tx.status === 'PENDING' ? 'badge-warning' : 'badge-danger';
+            
+            // Format description
+            let desc = '';
+            if (tx.type === 'SWAP') desc = `Swapped ${tx.amount} ${tx.token} to USDC (Threat Avoidance)`;
+            else if (tx.type === 'STAKE') desc = `Delegated restake: ${tx.amount} ${tx.token}`;
+            else if (tx.type === 'UNSTAKE') desc = `Unstaked from validator: ${tx.amount} ${tx.token}`;
+            else if (tx.type === 'INCOMING_TOKEN') desc = `Received risky token: +${tx.amount} ${tx.token}`;
+            else if (tx.type === 'DEPOSIT') desc = `Deposited native collateral: ${tx.amount} ${tx.token}`;
+            else if (tx.type === 'TIP_DEV') desc = `Sent ${tx.amount} ${tx.token} tip to developer`;
+            else if (tx.type === 'WALLET_LOGIN') desc = `Wallet connected: ${tx.amount}`;
+            else if (tx.type === 'NETWORK_SWITCH') desc = `Switched chain network to ${tx.amount}`;
+            else desc = tx.description || `${tx.type} operation`;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${timeStr}</td>
+              <td style="font-weight:600; font-size:0.75rem;">${tx.type}</td>
+              <td style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${desc}</td>
+              <td>
+                ${(tx.hash && tx.hash !== 'N/A') ? `<a href="https://scan.pharos.xyz/tx/${tx.hash}" target="_blank" style="font-family:'Fira Code', monospace; font-size:0.75rem;">${tx.hash.substring(0, 10)}...</a>` : '<span style="color:var(--text-secondary);">N/A</span>'}
+              </td>
+              <td><span class="badge ${badgeClass}">${tx.status}</span></td>
+            `;
+            ledgerBody.appendChild(row);
+          });
+        } else {
+          ledgerBody.innerHTML = `
+            <tr>
+              <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 1.5rem 0; font-size: 0.8rem;">
+                No transactions recorded in this session.
+              </td>
+            </tr>
+          `;
         }
       } catch (err) {
         console.error('Error fetching agent status:', err);
@@ -1152,12 +1495,44 @@
         let badgeClass = data.networkCongestion === 'LOW' ? 'badge-success' : 
                          data.networkCongestion === 'MEDIUM' ? 'badge-warning' : 'badge-danger';
 
+        const maxFeeGwei = parseFloat(data.maxFeePerGas) || 0.15;
+        const pharosRefundedFee = maxFeeGwei * 0.7; // Simulate 30% savings
+
         resultsDiv.innerHTML = `
           <div class="metric-row"><span class="metric-label">Base Fee</span><span class="metric-value">${data.currentBaseFee}</span></div>
           <div class="metric-row"><span class="metric-label">Priority Fee</span><span class="metric-value">${data.priorityFee}</span></div>
           <div class="metric-row"><span class="metric-label">Max Fee (Buffer)</span><span class="metric-value" style="color: var(--accent-purple);">${data.maxFeePerGas}</span></div>
           <div class="metric-row"><span class="metric-label">Congestion Level</span><span class="metric-value"><span class="badge ${badgeClass}">${data.networkCongestion}</span></span></div>
           <div class="metric-row"><span class="metric-label">Optimal Action Window</span><span class="metric-value">${data.optimalTimeWindow}</span></div>
+          
+          <div style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 0.75rem;">
+            <div style="font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 500;">
+              ⛽ Pharos EIP-1559 Gas Savings vs. Standard EVM
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.2rem;">
+                  <span>Standard EVM (with 20% safety buffer)</span>
+                  <span>${maxFeeGwei.toFixed(4)} Gwei</span>
+                </div>
+                <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden;">
+                  <div style="height: 100%; width: 100%; background: var(--accent-red);"></div>
+                </div>
+              </div>
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 0.2rem;">
+                  <span>Pharos L1 (Net fee after EIP-1559 Refund)</span>
+                  <span style="color: var(--accent-green); font-weight: 600;">${pharosRefundedFee.toFixed(4)} Gwei</span>
+                </div>
+                <div style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden;">
+                  <div style="height: 100%; width: 70%; background: var(--accent-green);"></div>
+                </div>
+              </div>
+              <div style="font-size: 0.7rem; color: var(--accent-purple); text-align: center; margin-top: 0.25rem; font-weight: 600;">
+                🔥 30.0% gas cost saved via automated Pharos L1 EIP-1559 Refund buffer!
+              </div>
+            </div>
+          </div>
         `;
       } catch (err) {
         resultsDiv.innerHTML = `<p style="color: var(--accent-red);">Gas fetch failed: ${err.message}</p>`;
@@ -1219,6 +1594,267 @@
       formatted = formatted.replace(/`(.*?)`/g, '<code style="background: rgba(255,255,255,0.06); padding: 0.1rem 0.3rem; border-radius: 4px; font-family: monospace;">$1</code>');
       formatted = formatted.replace(/\n/g, '<br>');
       return `<p>${formatted}</p>`;
+    }
+
+    // Web3 Wallet Functions
+    function openWalletModal() {
+      document.getElementById('wallet-modal').style.display = 'flex';
+    }
+
+    function closeWalletModal() {
+      document.getElementById('wallet-modal').style.display = 'none';
+    }
+
+    async function connectWalletProvider(providerName) {
+      closeWalletModal();
+      
+      if (providerName === 'demo') {
+        // Simulated connection
+        userAddress = "0x8B3217038eF3F827aC9eD396264906dCDb16d10c";
+        isWalletConnected = true;
+        currentChainId = 1672; // Pharos Mainnet
+        updateWalletUI();
+        addTxToLedger("WALLET_LOGIN", `Simulated Demo Wallet (${providerName})`, "SUCCESS", "N/A");
+        
+        // Append alert bubble to chat
+        const chatMessages = document.getElementById('chat-messages');
+        const alertBubble = document.createElement('div');
+        alertBubble.className = 'chat-bubble bubble-agent';
+        alertBubble.innerHTML = `<p>🟢 Connected to **Demo Simulated Wallet**: \`0x8B32...d10c\`. Running on **Pharos Mainnet** (Chain ID: 1672).</p>`;
+        chatMessages.appendChild(alertBubble);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return;
+      }
+
+      if (typeof window.ethereum === 'undefined') {
+        alert('No Web3 wallet extension detected. Please install MetaMask or Pharos Wallet, or use the "Simulated Demo Mode" to preview.');
+        openWalletModal();
+        return;
+      }
+
+      try {
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        userAddress = accounts[0];
+        isWalletConnected = true;
+        
+        const chainIdHex = await window.ethereum.request({ method: 'eth_chainId' });
+        currentChainId = parseInt(chainIdHex, 16);
+        
+        updateWalletUI();
+        addTxToLedger("WALLET_LOGIN", `Web3 Injected Wallet (${providerName})`, "SUCCESS", "N/A");
+        
+        // Append alert bubble to chat
+        const chatMessages = document.getElementById('chat-messages');
+        const alertBubble = document.createElement('div');
+        alertBubble.className = 'chat-bubble bubble-agent';
+        alertBubble.innerHTML = `<p>🟢 Connected to Web3 Wallet: \`${userAddress.substring(0, 6)}...${userAddress.substring(38)}\`. Checking network status...</p>`;
+        chatMessages.appendChild(alertBubble);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        if (currentChainId !== 1672) {
+          await switchToPharosMainnet();
+        }
+      } catch (err) {
+        console.error('Wallet connection error:', err);
+        alert('Wallet connection failed: ' + err.message);
+      }
+    }
+
+    function disconnectWallet() {
+      userAddress = null;
+      isWalletConnected = false;
+      currentChainId = null;
+      updateWalletUI();
+      addTxToLedger("WALLET_LOGOUT", "Disconnected wallet session", "SUCCESS", "N/A");
+    }
+
+    async function switchToPharosMainnet() {
+      if (typeof window.ethereum === 'undefined') {
+        // For demo mode
+        if (isWalletConnected && userAddress === "0x8B3217038eF3F827aC9eD396264906dCDb16d10c") {
+          currentChainId = 1672;
+          updateWalletUI();
+          addTxToLedger("NETWORK_SWITCH", "Pharos Mainnet (Simulated)", "SUCCESS", "N/A");
+        }
+        return;
+      }
+
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x688' }], // 1672 is 0x688 in hex
+        });
+        currentChainId = 1672;
+        updateWalletUI();
+        addTxToLedger("NETWORK_SWITCH", "Pharos Mainnet", "SUCCESS", "N/A");
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask.
+        if (switchError.code === 4902) {
+          try {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: '0x688',
+                chainName: 'Pharos Mainnet',
+                nativeCurrency: {
+                  name: 'PROS',
+                  symbol: 'PROS',
+                  decimals: 18
+                },
+                rpcUrls: ['https://rpc.pharos.xyz'],
+                blockExplorerUrls: ['https://scan.pharos.xyz']
+              }],
+            });
+            currentChainId = 1672;
+            updateWalletUI();
+            addTxToLedger("NETWORK_SWITCH", "Added & Switched to Pharos Mainnet", "SUCCESS", "N/A");
+          } catch (addError) {
+            console.error("Failed to add Pharos Network", addError);
+            alert("Failed to add Pharos Network: " + addError.message);
+          }
+        } else {
+          console.error("Failed to switch to Pharos Network", switchError);
+          alert("Failed to switch to Pharos Network: " + switchError.message);
+        }
+      }
+    }
+
+    function updateWalletUI() {
+      const connectBtn = document.getElementById('connect-wallet-btn');
+      const connectedInfo = document.getElementById('wallet-connected-info');
+      const addressSpan = document.getElementById('wallet-address');
+      const networkBadge = document.getElementById('network-badge');
+
+      if (isWalletConnected && userAddress) {
+        connectBtn.style.display = 'none';
+        connectedInfo.style.display = 'flex';
+        addressSpan.innerText = userAddress.substring(0, 6) + '...' + userAddress.substring(38);
+        
+        if (currentChainId === 1672) {
+          networkBadge.innerText = '🟢 Pharos';
+          networkBadge.className = 'badge badge-success';
+          networkBadge.style.cursor = 'default';
+          networkBadge.onclick = null;
+        } else {
+          networkBadge.innerText = '🔴 Switch to Pharos';
+          networkBadge.className = 'badge badge-danger';
+          networkBadge.style.cursor = 'pointer';
+          networkBadge.onclick = switchToPharosMainnet;
+        }
+      } else {
+        connectBtn.style.display = 'inline-flex';
+        connectedInfo.style.display = 'none';
+      }
+    }
+
+    async function sendTip() {
+      const amountInput = document.getElementById('tip-amount');
+      const amount = parseFloat(amountInput.value);
+      const statusDiv = document.getElementById('tip-status');
+
+      if (isNaN(amount) || amount <= 0) {
+        alert('Please enter a valid positive number for the tip amount.');
+        return;
+      }
+
+      if (!isWalletConnected) {
+        alert('Please connect your wallet first.');
+        openWalletModal();
+        return;
+      }
+
+      statusDiv.style.display = 'block';
+      statusDiv.style.color = 'var(--text-secondary)';
+      statusDiv.innerText = 'Initializing transaction...';
+
+      const devAddress = '0x8B3217038eF3F827aC9eD396264906dCDb16d10c';
+
+      if (currentChainId !== 1672 && typeof window.ethereum !== 'undefined') {
+        statusDiv.innerText = 'Switching to Pharos Mainnet...';
+        await switchToPharosMainnet();
+        if (currentChainId !== 1672) {
+          statusDiv.style.color = 'var(--accent-red)';
+          statusDiv.innerText = 'Transaction cancelled. Wrong network.';
+          return;
+        }
+      }
+
+      try {
+        // Check if demo wallet
+        if (userAddress === "0x8B3217038eF3F827aC9eD396264906dCDb16d10c") {
+          statusDiv.innerText = 'Broadcasting simulated transaction...';
+          await new Promise(resolve => setTimeout(resolve, 1500));
+          const mockTx = '0x' + Array.from({length: 64}, () => Math.floor(Math.random()*16).toString(16)).join('');
+          
+          statusDiv.style.color = 'var(--accent-green)';
+          statusDiv.innerHTML = `🎉 Thank you! Simulated tip sent. <a href="https://scan.pharos.xyz/tx/${mockTx}" target="_blank" style="color:var(--accent-purple); text-decoration:underline;">View Tx ↗</a>`;
+          
+          addTxToLedger("TIP_DEV", amount.toString(), "SUCCESS", mockTx);
+          return;
+        }
+
+        // Real wallet transaction
+        const valueHex = '0x' + (BigInt(Math.floor(amount * 1e18))).toString(16);
+        const txHash = await window.ethereum.request({
+          method: 'eth_sendTransaction',
+          params: [{
+            from: userAddress,
+            to: devAddress,
+            value: valueHex
+          }]
+        });
+
+        statusDiv.style.color = 'var(--accent-green)';
+        statusDiv.innerHTML = `🎉 Thank you! Tip sent. <a href="https://scan.pharos.xyz/tx/${txHash}" target="_blank" style="color:var(--accent-purple); text-decoration:underline;">View Tx ↗</a>`;
+        
+        addTxToLedger("TIP_DEV", amount.toString(), "SUCCESS", txHash);
+      } catch (err) {
+        statusDiv.style.color = 'var(--accent-red)';
+        statusDiv.innerText = `Failed: ${err.message}`;
+        addTxToLedger("TIP_DEV", amount.toString(), "FAILED", "N/A");
+      }
+    }
+
+    function addTxToLedger(type, amount, status, hash) {
+      localUserTransactions.unshift({
+        hash: hash,
+        type: type,
+        amount: amount,
+        token: 'PROS',
+        status: status,
+        timestamp: new Date().toISOString()
+      });
+      // Limit local logs
+      if (localUserTransactions.length > 50) {
+        localUserTransactions.pop();
+      }
+      
+      // Update stats balances if it is simulated or real successful transaction
+      if (status === 'SUCCESS' && type === 'TIP_DEV') {
+        const balanceProsEl = document.getElementById('balance-pros');
+        const currentBal = parseFloat(balanceProsEl.innerText);
+        const tipVal = parseFloat(amount) || 0;
+        if (!isNaN(currentBal) && currentBal >= tipVal) {
+          balanceProsEl.innerText = (currentBal - tipVal).toFixed(2);
+        }
+      }
+      
+      // Force refresh status
+      fetchAgentStatus();
+    }
+
+    function clearLedger() {
+      localUserTransactions = [];
+      const ledgerBody = document.getElementById('ledger-body');
+      ledgerBody.innerHTML = `
+        <tr>
+          <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 1.5rem 0; font-size: 0.8rem;">
+            No transactions recorded in this session.
+          </td>
+        </tr>
+      `;
+      // Trigger status refresh to reload agent transactions
+      fetchAgentStatus();
     }
   </script>
 </body>
