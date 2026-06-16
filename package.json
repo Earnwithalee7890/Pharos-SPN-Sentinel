@@ -1,7 +1,7 @@
 {
-  "name": "pharos-june-hackthon",
+  "name": "pharos-spn-sentinel",
   "version": "1.0.0",
-  "description": "",
+  "description": "Autonomous AI Security Shield and Staking Yield Optimizer for the Pharos AI Agent Economy. Provides 3 composable MCP Skills: Token Bytecode Auditor, Gas Refund Optimizer, and Validator Trust Assessor.",
   "main": "index.js",
   "scripts": {
     "start": "ts-node src/api/server.ts",
@@ -9,9 +9,9 @@
     "mcp": "ts-node src/mcp/server.ts",
     "test": "vitest run"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["pharos", "ai-agent", "mcp", "blockchain", "security", "staking", "spn", "skill"],
+  "author": "Earnwithalee7890",
+  "license": "Apache-2.0",
   "type": "commonjs",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
