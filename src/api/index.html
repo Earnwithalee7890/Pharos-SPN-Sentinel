@@ -913,6 +913,198 @@
       from { opacity: 0; }
       to { opacity: 1; }
     }
+
+    /* Smooth scroll */
+    html { scroll-behavior: smooth; }
+
+    /* Mobile hamburger menu */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-primary);
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    /* Network Status Bar */
+    .network-status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
+      background: rgba(16, 185, 129, 0.04);
+      border: 1px solid rgba(16, 185, 129, 0.12);
+      border-radius: 8px;
+      margin-bottom: 1.25rem;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      animation: fadeIn 0.5s ease;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse-dot 2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--accent-green); }
+      50% { opacity: 0.5; box-shadow: 0 0 16px var(--accent-green); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Toast Notifications */
+    .toast-container {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: rgba(16, 12, 34, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.85rem 1.25rem;
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      animation: toast-slide 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: auto;
+      max-width: 360px;
+    }
+
+    .toast-success { border-left: 3px solid var(--accent-green); }
+    .toast-error { border-left: 3px solid var(--accent-red); }
+    .toast-info { border-left: 3px solid var(--accent-blue); }
+    .toast-warning { border-left: 3px solid var(--accent-yellow); }
+
+    @keyframes toast-slide {
+      from { opacity: 0; transform: translateX(100px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Transaction History */
+    .tx-history {
+      max-height: 150px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .tx-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 6px;
+      font-size: 0.75rem;
+      border-left: 2px solid var(--accent-purple);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tx-item-stake { border-left-color: var(--accent-green); }
+    .tx-item-audit { border-left-color: var(--accent-yellow); }
+    .tx-item-defend { border-left-color: var(--accent-red); }
+
+    /* Quick Actions Bar (mobile-first) */
+    .quick-actions {
+      display: none;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .quick-action-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.75rem 0.5rem;
+      background: var(--bg-panel);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 0.68rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .quick-action-btn:active {
+      transform: scale(0.95);
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    /* Mobile Responsive Breakpoints */
+    @media (max-width: 768px) {
+      .mobile-menu-btn { display: block; }
+      .header-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: rgba(10, 8, 22, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+        z-index: 100;
+        min-width: 200px;
+      }
+      .header-links.mobile-open { display: flex; }
+      header h1 { font-size: 1.2rem; }
+      header p { font-size: 0.72rem; }
+      .container { padding: 0.75rem; }
+      .workspace-grid { grid-template-columns: 1fr !important; gap: 1rem; }
+      .chat-panel { height: 350px; }
+      .terminal-panel { height: 180px; }
+      .sentinel-switches { grid-template-columns: 1fr; }
+      .sentinel-3d-card { display: none; }
+      .modal-content { width: 95%; max-height: 90vh; overflow-y: auto; }
+      .modal-columns { grid-template-columns: 1fr; }
+      .footer { flex-direction: column; gap: 0.75rem; text-align: center; }
+      .footer > div:last-child { justify-content: center; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .quick-actions { display: flex; }
+      .staking-console-grid {
+        grid-template-columns: 1fr !important;
+      }
+      .coin-container { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      header h1 { font-size: 1rem; }
+      .logo-img { width: 32px; height: 32px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+      .stat-value { font-size: 1rem; }
+      .btn { padding: 0.5rem 0.8rem; font-size: 0.78rem; }
+      .chat-bubble { max-width: 90%; font-size: 0.82rem; }
+      .wallet-grid { grid-template-columns: 1fr; }
+      .toast-container { left: 0.5rem; right: 0.5rem; }
+      .toast { max-width: 100%; }
+    }
   </style>
 </head>
 <body>
@@ -923,6 +1115,9 @@
   <div class="glow-sphere glow-1"></div>
   <div class="glow-sphere glow-2"></div>
 
+  <!-- Toast Notifications Container -->
+  <div class="toast-container" id="toast-container"></div>
+
   <div class="container">
     <header>
       <div class="logo-container">
@@ -932,6 +1127,9 @@
           <p>Autonomous AI Staking & Threat Security Sentinel</p>
         </div>
       </div>
+      <button class="mobile-menu-btn" onclick="document.querySelector('.header-links').classList.toggle('mobile-open')">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
       <div class="header-links">
         <button id="btn-connect" class="btn btn-primary" onclick="openWalletModal()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg>
@@ -943,6 +1141,38 @@
         </a>
       </div>
     </header>
+
+    <!-- Network Status Bar -->
+    <div class="network-status-bar">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span class="status-dot"></span>
+        <span>Connected to <strong style="color: var(--text-primary);">Pharos Mainnet</strong> (Chain ID: 1672)</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <span id="network-block">Block: --</span>
+        <span id="network-tps">TPS: --</span>
+      </div>
+    </div>
+
+    <!-- Quick Actions Bar (visible on mobile) -->
+    <div class="quick-actions">
+      <button class="quick-action-btn" onclick="toggleAccordion('acc-audit'); document.getElementById('acc-audit').scrollIntoView({behavior:'smooth'})">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-yellow)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Audit
+      </button>
+      <button class="quick-action-btn" onclick="toggleAccordion('acc-gas'); document.getElementById('acc-gas').scrollIntoView({behavior:'smooth'})">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2"><path d="M3 22V2a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v20"/><path d="M17 12h4v8a2 2 0 0 1-2 2h-2"/><circle cx="10" cy="8" r="3"/></svg>
+        Gas
+      </button>
+      <button class="quick-action-btn" onclick="toggleAccordion('acc-trust'); document.getElementById('acc-trust').scrollIntoView({behavior:'smooth'})">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Trust
+      </button>
+      <button class="quick-action-btn" onclick="openWalletModal()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" stroke-width="2"><path d="M21 12V7H5a2 2 0 0 1-2-2V5M3 10V18a2 2 0 0 0 2 2h16v-4"/><rect x="14" y="11" width="8" height="6" rx="2"/></svg>
+        Wallet
+      </button>
+    </div>
 
     <div class="workspace-grid">
       <!-- LEFT COLUMN -->
@@ -1058,7 +1288,7 @@
             </div>
             
             <!-- Interactive Staking Section -->
-            <div style="display: grid; grid-template-columns: 1fr 130px; gap: 1rem; background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.03); border-radius: 8px; padding: 1rem;">
+            <div class="staking-console-grid" style="display: grid; grid-template-columns: 1fr 130px; gap: 1rem; background: rgba(0,0,0,0.18); border: 1px solid rgba(255,255,255,0.03); border-radius: 8px; padding: 1rem;">
               <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                 <span style="font-size: 0.72rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; letter-spacing: 0.5px;">Validator Staking Console</span>
                 <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -1078,7 +1308,7 @@
                   <div>Live Yield: <span style="font-weight: 600; color: var(--accent-green);" id="live-rewards-ticker">0.00000000 PROS</span></div>
                 </div>
               </div>
-              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
+              <div class="coin-container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
                 <div style="border: 1px solid rgba(139, 92, 246, 0.25); border-radius: 50%; padding: 6px; background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 75%); box-shadow: 0 0 15px rgba(139, 92, 246, 0.2); cursor: pointer; transition: all 0.3s ease; position: relative;" title="Click to flip coin!">
                   <canvas id="coin-3d-canvas" style="width: 110px; height: 110px; display: block;"></canvas>
                 </div>
@@ -1103,6 +1333,22 @@
           <div class="sim-buttons">
             <button class="btn btn-danger btn-sm" onclick="triggerOperatorAction('scan')">Execute Mainnet Security Scan</button>
             <button class="btn btn-secondary btn-sm" onclick="triggerOperatorAction('rebalance')">Force Validator Yield Rebalance</button>
+          </div>
+        </section>
+
+        <!-- Transaction History -->
+        <section class="panel" id="tx-history-panel">
+          <div class="panel-header">
+            <span class="panel-title" style="color: var(--accent-blue);">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+              Transaction History
+            </span>
+            <span class="panel-subtitle">Recent Activity</span>
+          </div>
+          <div style="padding: 0.85rem;">
+            <div class="tx-history" id="tx-history-list">
+              <div class="tx-item" style="color: var(--text-secondary); justify-content: center;">No transactions recorded yet</div>
+            </div>
           </div>
         </section>
 
@@ -1703,7 +1949,7 @@
       const amount = parseFloat(amountStr);
 
       if (isNaN(amount) || amount <= 0) {
-        alert("Please enter a valid amount greater than 0.");
+        showToast('Please enter a valid amount greater than 0.', 'warning');
         return;
       }
 
@@ -1741,10 +1987,11 @@
             document.getElementById('balance-staked').innerText = Math.max(0, stakedVal - amount).toFixed(2);
           }
           document.getElementById('staking-validator').innerText = truncatedVal;
-          alert(`${action.toUpperCase()} transaction submitted! Hash: ${txHash}`);
+          showToast(`${action.toUpperCase()} transaction submitted!`, 'success');
+          addTransactionToHistory('stake', `${action.toUpperCase()} ${amount} PROS`, amount);
         } catch (err) {
           logMockDaemonMessage('ERROR', `${action.toUpperCase()} failed: ${err.message}`);
-          alert(err.message);
+          showToast(err.message, 'error');
         }
       } else {
         // 2. Simulated Sandbox Mode
@@ -1768,11 +2015,12 @@
           document.getElementById('staking-validator').innerText = truncatedVal;
           
           logMockDaemonMessage('SUCCESS', `Simulated Staking delegation processed! Synced with Sentinel backend.`);
+          addTransactionToHistory('stake', `${action.toUpperCase()} ${amount} PROS (Simulated)`, amount);
           
           // Instantly poll status to refresh terminal logs
           fetchAgentStatus();
         } catch (err) {
-          alert(err.message);
+          showToast(err.message, 'error');
           logMockDaemonMessage('ERROR', `Simulated staking failed: ${err.message}`);
         }
       }
@@ -2299,7 +2547,7 @@
           }, 1000);
         }
       } catch (err) {
-        alert(err.message);
+        showToast(err.message, 'error');
         disconnectWallet();
       }
     }
@@ -2707,6 +2955,66 @@
       formatted = formatted.replace(/\n/g, '<br>');
       return `<p>${formatted}</p>`;
     }
+
+    // Toast Notification System
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      const icons = {
+        success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>',
+        error: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-red)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+        info: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+        warning: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-yellow)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+      };
+      toast.innerHTML = `${icons[type] || icons.info}<span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100px)'; toast.style.transition = 'all 0.3s ease'; setTimeout(() => toast.remove(), 300); }, 4000);
+    }
+
+    // Transaction History
+    function addTransactionToHistory(type, description, amount) {
+      const list = document.getElementById('tx-history-list');
+      if (!list) return;
+      // Clear placeholder
+      if (list.children.length === 1 && list.children[0].textContent.includes('No transactions')) {
+        list.innerHTML = '';
+      }
+      const item = document.createElement('div');
+      const cls = type === 'stake' ? 'tx-item-stake' : type === 'audit' ? 'tx-item-audit' : type === 'defend' ? 'tx-item-defend' : '';
+      item.className = `tx-item ${cls}`;
+      const time = new Date().toLocaleTimeString();
+      item.innerHTML = `<span>${description}</span><span style="color: var(--text-secondary);">${time}</span>`;
+      list.insertBefore(item, list.firstChild);
+      // Keep max 20
+      while (list.children.length > 20) list.removeChild(list.lastChild);
+    }
+
+    // Network Status Updater
+    async function updateNetworkStatus() {
+      try {
+        const resp = await fetch('/api/gas-estimate');
+        if (resp.ok) {
+          const data = await resp.json();
+          const blockEl = document.getElementById('network-block');
+          const tpsEl = document.getElementById('network-tps');
+          if (blockEl) blockEl.textContent = 'Gas: ' + data.currentBaseFee;
+          if (tpsEl) tpsEl.textContent = 'Congestion: ' + data.networkCongestion;
+        }
+      } catch (e) {}
+    }
+    updateNetworkStatus();
+    setInterval(updateNetworkStatus, 15000);
+
+    // Close mobile menu on outside click
+    document.addEventListener('click', (e) => {
+      const links = document.querySelector('.header-links');
+      const menuBtn = document.querySelector('.mobile-menu-btn');
+      if (links && menuBtn && !links.contains(e.target) && !menuBtn.contains(e.target)) {
+        links.classList.remove('mobile-open');
+      }
+    });
   </script>
 </body>
 </html>
